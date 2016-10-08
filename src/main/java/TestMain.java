@@ -1,6 +1,6 @@
 import processing.core.PApplet;
 
-import java.util.TreeMap;
+import java.util.Optional;
 
 /**
  * Created by wickstopher on 10/8/16.
@@ -9,20 +9,39 @@ public class TestMain extends PApplet
 {
     public void settings()
     {
-        size(200, 200);
-
-        TreeMap<Integer, Integer> x = new TreeMap<>();
+        size(1000, 1000);
     }
 
     public void draw()
     {
-        background(0);
-        ellipse(mouseX, mouseY, 20, 20);
-        point(2, 3);
+        Line line1 = new Line(0, 200, 400, 500);
+        Line line2 = new Line(200, 400, 5, 40);
+
+        line(line1);
+        line(line2);
+
+        Optional<Point> point = line1.intersectionWith(line2);
+        point.ifPresent(p -> point(p));
     }
 
     public static void main(String[] args)
     {
         PApplet.main("TestMain");
+    }
+
+    public void line(Line line)
+    {
+        float x1 = (float) line.a.x;
+        float y1 = (float)line.a.y;
+        float x2 = (float) line.b.x;
+        float y2 = (float) line.b.y;
+        line(x1, y1, x2, y2);
+    }
+
+    public void point(Point point)
+    {
+        float x = (float) point.x;
+        float y = (float) point.y;
+        ellipse(x, y, 5, 5);
     }
 }
