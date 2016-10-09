@@ -26,7 +26,11 @@ public class TestMain extends PApplet
 
     public static void main(String[] args)
     {
-        PApplet.main("TestMain");
+        //PApplet.main("TestMain");
+
+        Line line1 = new Line(0, 200, 400, 500);
+        Line line2 = new Line(0, 200, 403, 504);
+        System.out.println(line1.intersectionWith(line2));
     }
 
     public void line(Line line)

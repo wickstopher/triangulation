@@ -1,3 +1,4 @@
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 /**
@@ -12,9 +13,11 @@ public class EventQueue
         queue = new TreeMap<>();
     }
 
-    public SweepLineEvent pop()
+    public Entry<Point, SweepLineEvent> pop()
     {
-        return queue.remove(queue.firstKey());
+        Entry<Point, SweepLineEvent> firstEntry = queue.pollFirstEntry();
+        queue.remove(firstEntry.getKey());
+        return firstEntry;
     }
 
     public void push(SweepLineEvent event)
@@ -25,5 +28,10 @@ public class EventQueue
     public void delete(Point eventPoint)
     {
         queue.remove(eventPoint);
+    }
+
+    public boolean isEmpty()
+    {
+        return queue.isEmpty();
     }
 }

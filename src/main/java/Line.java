@@ -10,6 +10,7 @@ public class Line
     public final Point b;
     public final Double slope;
     public final Double intercept;
+    public Double statusKey;
 
     public Line(Point a, Point b)
     {
@@ -28,6 +29,7 @@ public class Line
             this.slope = (this.b.y - this.a.y) / (this.b.x - this.a.x);
             this.intercept = this.a.y - (this.slope * this.a.x);
         }
+        statusKey = null;
     }
 
     public Line(double x1, double y1, double x2, double y2)
@@ -51,8 +53,26 @@ public class Line
         return (slope == null);
     }
 
+    public boolean isCollinear(Line other)
+    {
+        if (isVertical()) {
+            return a.x == other.a.x;
+        }
+        return (slope == other.slope && intercept == other.intercept);
+    }
+
     public Optional<Point> intersectionWith(Line other)
     {
+        if (isCollinear(other)) {
+            return Optional.empty();
+        }
+        if (a.equals(other.a) || a.equals(other.b)) {
+            return Optional.of(a);
+        }
+        if (b.equals(other.a) || b.equals(other.b)) {
+            return Optional.of(b);
+        }
+
         double[][] coefficients = { {-slope, 1}, {-other.slope, 1} };
         double[][] constants = { {intercept}, {other.intercept} };
 
@@ -64,5 +84,19 @@ public class Line
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    public boolean isAbove(Line other, double x)
+    {
+        return yPosition(x) > other.yPosition(x);
+    }
+
+    /**
+     * @param x
+     * @return The y-position on this line at the given x-coordinate
+     */
+    public double yPosition(double x)
+    {
+        return slope * x + intercept;
     }
 }
