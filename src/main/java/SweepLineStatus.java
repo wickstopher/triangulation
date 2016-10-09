@@ -14,12 +14,11 @@ public class SweepLineStatus {
     public void add(Line segment, double xPosition, EventQueue events) {
 
         double key = segment.yPosition(xPosition);
-        segment.statusKey = key;
         Entry<Double, Line> above = above(key);
         Entry<Double, Line> below = below(key);
         List<Line> removed = new ArrayList<>();
 
-        status.put(key, segment);
+        put(key, segment);
 
         while (above != null && !above.getValue().isAbove(segment, xPosition)) {
             status.remove(above.getKey());
@@ -28,7 +27,7 @@ public class SweepLineStatus {
             below = below(key);
         }
 
-        while (below != null && segment.isAbove(below.getValue(), xPosition)) {
+        while (below != null && !segment.isAbove(below.getValue(), xPosition)) {
             status.remove(below.getKey());
             removed.add(below.getValue());
             above = above(key);
@@ -57,6 +56,9 @@ public class SweepLineStatus {
         Entry<Double, Line> below = below(key);
         Line line = status.remove(key);
 
+        if (line == null)
+            System.out.println("wtf");
+
         if (line.isVertical()) {
             intersections = new ArrayList<>();
             double yMin = Math.min(line.a.y, line.b.y);
@@ -80,15 +82,12 @@ public class SweepLineStatus {
         Line valueTwo = status.get(k2);
 
         Entry<Double, Line> nowAboveTwo = above(k1);
-        Entry<Double, Line> nowBelowTwo = below(k1);
-        Entry<Double, Line> nowAboveOne = above(k2);
         Entry<Double, Line> nowBelowOne = below(k2);
 
-        assert(nowBelowTwo.getValue().equals(valueOne));
-        assert(nowAboveOne.getValue().equals(valueTwo));
+        if (status.higherKey(k2) != k1) throw new RuntimeException();
 
-        status.put(k1, valueTwo);
-        status.put(k2, valueOne);
+        put(k1, valueTwo);
+        put(k2, valueOne);
 
         if (nowAboveTwo != null) {
             checkForIntersectionsAndInsert(nowAboveTwo.getValue(), valueTwo, xPosition, events);
@@ -99,6 +98,13 @@ public class SweepLineStatus {
             checkForIntersectionsAndInsert(valueOne, nowBelowOne.getValue(), xPosition, events);
             checkForIntersectionsAndDelete(valueTwo, nowBelowOne.getValue(), xPosition, events);
         }
+    }
+
+    public void put(Double key, Line value)
+    {
+        status.put(key, value);
+        value.statusKey = key;
+        if (!status.get(value.statusKey).equals(value)) throw new RuntimeException();
     }
 
     public Entry<Double, Line> above(double key) {

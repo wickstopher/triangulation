@@ -1,36 +1,51 @@
 import processing.core.PApplet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
 /**
  * Created by wickstopher on 10/8/16.
  */
 public class TestMain extends PApplet
 {
+    private boolean proceed;
+    private LineIntersection interComp;
+    private List<IntersectionEvent> intersections;
+    private List<Line> lines;
+
     public void settings()
     {
+        interComp = new LineIntersection();
         size(1000, 1000);
     }
 
     public void draw()
     {
-        Line line1 = new Line(0, 200, 400, 500);
-        Line line2 = new Line(200, 400, 5, 40);
+         if (lines != null && intersections != null) {
+             background(255);
+             lines.forEach(l -> line(l));
+             intersections.forEach(i -> point(i.point));
+         }
+    }
 
-        line(line1);
-        line(line2);
-
-        Optional<Point> point = line1.intersectionWith(line2);
-        point.ifPresent(p -> point(p));
+    public void mouseClicked()
+    {
+        try {
+            lines = getLines(10);
+            intersections = interComp.computeIntersections(lines);
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+            lines = null;
+        }
     }
 
     public static void main(String[] args)
     {
-        //PApplet.main("TestMain");
-
-        Line line1 = new Line(0, 200, 400, 500);
-        Line line2 = new Line(0, 200, 403, 504);
-        System.out.println(line1.intersectionWith(line2));
+        PApplet.main("TestMain");
     }
 
     public void line(Line line)
@@ -47,5 +62,24 @@ public class TestMain extends PApplet
         float x = (float) point.x;
         float y = (float) point.y;
         ellipse(x, y, 5, 5);
+    }
+
+    public static List<Line> getLines(int n)
+    {
+        List<Line> lines = new ArrayList<>(n);
+        IntStream.range(0, n).forEach(i -> lines.add(getRandomLine(i)));
+        return lines;
+    }
+
+    public static Line getRandomLine(int i)
+    {
+        Random random = new Random();
+
+        return new Line(
+            random.nextInt(1000),
+            random.nextInt(1000),
+            random.nextInt(1000),
+            random.nextInt(1000)
+        );
     }
 }

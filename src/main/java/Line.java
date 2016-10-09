@@ -61,6 +61,20 @@ public class Line
         return (slope == other.slope && intercept == other.intercept);
     }
 
+    public boolean hasIntersection(Line other)
+    {
+        double[][] coefficients = { {b.x - a.x, other.a.x - other.b.x}, {b.y - a.y, other.a.y - other.b.y} };
+        double[][] constants = { {other.a.x - a.x}, {other.a.y - a.y} };
+        try {
+            Matrix solution = solve(coefficients, constants);
+            double s = solution.get(0, 0);
+            double t = solution.get(1, 0);
+            return 0 <= s && s <= 1 && 0 <= t && t <= 1;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public Optional<Point> intersectionWith(Line other)
     {
         if (isCollinear(other)) {
@@ -73,17 +87,27 @@ public class Line
             return Optional.of(b);
         }
 
+        if (!hasIntersection(other)) {
+            return Optional.empty();
+        }
+
         double[][] coefficients = { {-slope, 1}, {-other.slope, 1} };
         double[][] constants = { {intercept}, {other.intercept} };
 
         try {
-            Matrix coefficientMatrix = new Matrix(coefficients);
-            Matrix constantMatrix = new Matrix(constants);
-            Matrix solution = coefficientMatrix.solve(constantMatrix);
+            Matrix solution = solve(coefficients, constants);
             return Optional.of(new Point(solution.get(0, 0), solution.get(1, 0)));
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    private Matrix solve(double[][] coefficients, double[][] constants)
+    {
+        Matrix coefficientMatrix = new Matrix(coefficients);
+        Matrix constantMatrix = new Matrix(constants);
+        Matrix solution = coefficientMatrix.solve(constantMatrix);
+        return solution;
     }
 
     public boolean isAbove(Line other, double x)
@@ -98,5 +122,10 @@ public class Line
     public double yPosition(double x)
     {
         return slope * x + intercept;
+    }
+
+    public String toString()
+    {
+        return "[ " + a + " -- " + b + "]";
     }
 }

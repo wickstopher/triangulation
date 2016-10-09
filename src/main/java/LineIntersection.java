@@ -57,11 +57,12 @@ public class LineIntersection
 
     private void handleEvent(RightEndpointEvent event)
     {
-        status.remove(xPosition, events).ifPresent(events -> intersections.addAll(events));
+        status.remove(event.line.statusKey, events).ifPresent(events -> intersections.addAll(events));
     }
 
     private void handleEvent(IntersectionEvent event)
     {
         status.swap(event.line1.statusKey, event.line2.statusKey, xPosition, events);
+        intersections.add(event);
     }
 }
