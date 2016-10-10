@@ -29,7 +29,7 @@ public class Line
             this.slope = (this.b.y - this.a.y) / (this.b.x - this.a.x);
             this.intercept = this.a.y - (this.slope * this.a.x);
         }
-        statusKey = null;
+        statusKey = this.a.y;
     }
 
     public Line(double x1, double y1, double x2, double y2)

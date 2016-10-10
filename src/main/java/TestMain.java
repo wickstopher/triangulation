@@ -38,8 +38,13 @@ public class TestMain extends PApplet
             lines = getLines(10);
             intersections = interComp.computeIntersections(lines);
         } catch (Exception e) {
-            System.out.println(e.getStackTrace());
-            lines = null;
+            background(255);
+            lines.forEach(l ->  {
+                line(l);
+                System.out.println(l);
+            });
+            delay(500);
+            throw e;
         }
     }
 

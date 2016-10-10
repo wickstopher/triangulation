@@ -56,8 +56,10 @@ public class SweepLineStatus {
         Entry<Double, Line> below = below(key);
         Line line = status.remove(key);
 
-        if (line == null)
-            System.out.println("wtf");
+        if (line == null) {
+            System.out.println("WTF!!!");
+            return Optional.empty();
+        }
 
         if (line.isVertical()) {
             intersections = new ArrayList<>();
@@ -84,7 +86,11 @@ public class SweepLineStatus {
         Entry<Double, Line> nowAboveTwo = above(k1);
         Entry<Double, Line> nowBelowOne = below(k2);
 
-        if (status.higherKey(k2) != k1) throw new RuntimeException();
+        if (status.higherKey(k2) != k1) {
+            Double intermediate = k1;
+            k1 = k2;
+            k2 = k1;
+        }
 
         put(k1, valueTwo);
         put(k2, valueOne);
