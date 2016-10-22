@@ -1,3 +1,7 @@
+package com.wicks.lineintersection;
+
+import com.wicks.pointtools.Line;
+
 /**
  * Created by wickstopher on 10/8/16.
  */

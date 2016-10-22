@@ -1,3 +1,5 @@
+package com.wicks.pointtools;
+
 import java.util.Optional;
 import Jama.*;
 
@@ -14,7 +16,7 @@ public class Line
 
     public Line(Point a, Point b)
     {
-        // We guarantee that the "leftmost" Point is always going to be Point a
+        // We guarantee that the "leftmost" com.wicks.pointtools.Point is always going to be com.wicks.pointtools.Point a
         if (a.compareTo(b) > 0) {
             this.a = b;
             this.b = a;

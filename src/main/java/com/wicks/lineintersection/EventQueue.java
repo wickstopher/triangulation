@@ -1,3 +1,7 @@
+package com.wicks.lineintersection;
+
+import com.wicks.pointtools.Point;
+
 import java.util.Map.Entry;
 import java.util.TreeMap;
 

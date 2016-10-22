@@ -1,10 +1,12 @@
+package com.wicks.lineintersection;
+
+import com.wicks.pointtools.Line;
+import com.wicks.pointtools.Point;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 /**
@@ -50,7 +52,7 @@ public class TestMain extends PApplet
 
     public static void main(String[] args)
     {
-        PApplet.main("TestMain");
+        PApplet.main("com.wicks.lineintersection.TestMain");
     }
 
     public void line(Line line)
