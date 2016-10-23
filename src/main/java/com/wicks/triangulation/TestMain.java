@@ -1,5 +1,6 @@
 package com.wicks.triangulation;
 
+import com.google.common.collect.TreeMultiset;
 import com.wicks.pointtools.Point;
 
 import java.util.ArrayList;
@@ -25,6 +26,6 @@ public class TestMain
 
         MonotonePolygonTriangulation mpt = new MonotonePolygonTriangulation();
 
-        List<ReflexChainPoint> output = mpt.translateInput(polygon);
+        TreeMultiset<ReflexChainPoint> output = mpt.translateInput(polygon);
     }
 }

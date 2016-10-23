@@ -1,5 +1,6 @@
 package com.wicks.triangulation;
 
+import com.google.common.collect.TreeMultiset;
 import com.wicks.pointtools.Point;
 
 import java.util.ArrayList;
@@ -21,11 +22,11 @@ public class MonotonePolygonTriangulation
      * @param polygon
      * @return
      */
-    public List<ReflexChainPoint> translateInput(List<Point> polygon)
+    public TreeMultiset<ReflexChainPoint> translateInput(List<Point> polygon)
     {
         int minIndex = polygon.indexOf(Collections.min(polygon));
         int maxIndex = polygon.indexOf(Collections.max(polygon));
-        List<ReflexChainPoint> output = new ArrayList<>();
+        TreeMultiset<ReflexChainPoint> output = TreeMultiset.create();
 
         boolean onUpperChain = true;
 
@@ -47,7 +48,6 @@ public class MonotonePolygonTriangulation
                 else output.add(new LowerChainPoint(point));
             }
         }
-        Collections.sort(output);
         return output;
     }
 }
