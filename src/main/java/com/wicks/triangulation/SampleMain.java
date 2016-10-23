@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by wickstopher on 10/23/16.
  */
-public class TestMain
+public class SampleMain
 {
     public static void main(String[] args)
     {
@@ -26,6 +26,6 @@ public class TestMain
 
         MonotonePolygonTriangulation mpt = new MonotonePolygonTriangulation();
 
-        TreeMultiset<ReflexChainPoint> output = mpt.translateInput(polygon);
+        //TreeMultiset<ReflexChainPoint> output = mpt.translateInput(polygon);
     }
 }

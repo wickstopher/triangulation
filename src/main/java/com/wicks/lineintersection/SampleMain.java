@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 /**
  * Created by wickstopher on 10/8/16.
  */
-public class TestMain extends PApplet
+public class SampleMain extends PApplet
 {
     private boolean proceed;
     private LineIntersection interComp;
