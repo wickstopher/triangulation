@@ -17,7 +17,7 @@ public class MonotonePolygonTriangulation
     }
 
     /**
-     * Assumes the polygon is a list of points in counter-clockwise vertex order
+     * Assumes that polygon is a list of points in counter-clockwise vertex order representing a monotone polygon.
      * @param polygon
      * @return
      */
@@ -47,8 +47,7 @@ public class MonotonePolygonTriangulation
                 else output.add(new LowerChainPoint(point));
             }
         }
+        Collections.sort(output);
         return output;
     }
-
-
 }
