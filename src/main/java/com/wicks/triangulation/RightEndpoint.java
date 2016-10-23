@@ -7,14 +7,9 @@ import com.wicks.pointtools.Point;
  */
 public class RightEndpoint extends ReflexChainPoint
 {
-    public RightEndpoint(double x, double y)
+    public RightEndpoint(Point point, Point previous, Point next)
     {
-        super(x, y);
-    }
-
-    public RightEndpoint(Point point)
-    {
-        super(point);
+        super(point, previous, next);
     }
 
     @Override

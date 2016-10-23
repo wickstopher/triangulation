@@ -7,14 +7,9 @@ import com.wicks.pointtools.Point;
  */
 public class UpperChainPoint extends ReflexChainPoint
 {
-    public UpperChainPoint(double x, double y)
+    public UpperChainPoint(Point point, Point previous, Point next)
     {
-        super(x, y);
-    }
-
-    public UpperChainPoint(Point point)
-    {
-        super(point);
+        super(point, previous, next);
     }
 
     @Override
