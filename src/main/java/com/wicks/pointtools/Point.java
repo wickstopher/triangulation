@@ -54,7 +54,14 @@ public class Point implements Comparable
      */
     public double getAngle(Point p2, Point p3)
     {
-        // treat p2 and p3 vectors, with this as the origin
+        // be agnostic with respect to parameter order
+        if (p2.compareTo(p3) < 0) {
+            Point temp = p2;
+            p2 = p3;
+            p3 = temp;
+        }
+
+        // treat p2 and p3 as vectors, with this as the origin
         double x1 = p2.x - x;
         double y1 = p2.y - y;
         double x2 = p3.x - x;
