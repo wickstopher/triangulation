@@ -54,9 +54,16 @@ public class Point implements Comparable
      */
     public double getAngle(Point p2, Point p3)
     {
-        double numerator = Math.pow(distance(p2), 2) + Math.pow(distance(p3), 2) + Math.pow(p2.distance(p3), 2);
-        double denominator = 2 * distance(p2) * distance(p3);
-        return Math.acos(numerator / denominator);
+        // treat p2 and p3 vectors, with this as the origin
+        double x1 = p2.x - x;
+        double y1 = p2.y - y;
+        double x2 = p3.x - x;
+        double y2 = p3.y - y;
+
+        double angle = Math.atan2(y2, x2) - Math.atan2(y1, x1);
+        if (angle < 0) angle += 2 * Math.PI;
+
+        return Math.toDegrees(angle);
     }
 
     public double distance(Point other)
