@@ -52,7 +52,7 @@ public class SampleMain extends PApplet
 
     public static void main(String[] args)
     {
-        PApplet.main("com.wicks.lineintersection.TestMain");
+        PApplet.main("com.wicks.lineintersection.SampleMain");
     }
 
     public void line(Line line)

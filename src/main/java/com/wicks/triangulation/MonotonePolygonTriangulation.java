@@ -41,7 +41,7 @@ public class MonotonePolygonTriangulation
                 u = reflexChain.push(vPrev);
             } else {
                 if (!vPrev.isReflexVertex()) {
-                    diagonals.add(new Line())
+                    diagonals.add(new Line(1, 2, 3, 4));
                 } else {
 
                 }
