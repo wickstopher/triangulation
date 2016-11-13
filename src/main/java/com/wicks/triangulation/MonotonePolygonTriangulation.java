@@ -18,12 +18,15 @@ public class MonotonePolygonTriangulation
 
     }
 
-    public void triangulatePolygon(List<Point> polygon)
+    public List<Line> triangulatePolygon(List<Point> polygon)
     {
         sortedPoints = translateInput(polygon);
         List<Line> diagonals = new ArrayList<>();
         Stack<ReflexChainPoint> reflexChain = new Stack<>();
-        ReflexChainPoint u = reflexChain.get(0);
+        ReflexChainPoint u = sortedPoints.get(0);
+        if (u.getChainPosition() != ReflexChainPoint.ChainPosition.LEFT_ENDPOINT) {
+            throw new RuntimeException("WTF");
+        }
         ReflexChainPoint vPrev = u;
         reflexChain.push(u);
 
@@ -35,19 +38,30 @@ public class MonotonePolygonTriangulation
             // Right/Left endpoints can be considered part of either the upper or lower chain (TODO: verify this)
             if (vPosition != vPrevPosition && vPrevPosition != ReflexChainPoint.ChainPosition.LEFT_ENDPOINT && vPosition != ReflexChainPoint.ChainPosition.RIGHT_ENDPOINT) {
 
-                while (reflexChain.peek() != u) { // reference comparison should be sufficient here
+                while (!reflexChain.isEmpty() && reflexChain.peek() != u) { // reference comparison should be sufficient here
                     diagonals.add(new Line(v, reflexChain.pop()));
                 }
                 u = reflexChain.push(vPrev);
             } else {
                 if (!vPrev.isReflexVertex()) {
-                    diagonals.add(new Line(1, 2, 3, 4));
-                } else {
-
+                    ReflexChainPoint prev = reflexChain.pop();
+                    if (!reflexChain.isEmpty()) {
+                        ReflexChainPoint twoPrev = reflexChain.peek();
+                        while (prev.getAngle(twoPrev, v) < 180) {
+                            diagonals.add(new Line(v, prev));
+                            prev = reflexChain.pop();
+                            if (reflexChain.isEmpty()) break;
+                            twoPrev = reflexChain.peek();
+                        }
+                    }
+                    reflexChain.push(prev); // last visible vertex
                 }
+                // in either case, v is added to the reflex chain
+                reflexChain.push(v);
             }
             vPrev = v;
         }
+        return diagonals;
     }
 
     /**
