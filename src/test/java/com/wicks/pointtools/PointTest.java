@@ -67,4 +67,34 @@ public class PointTest
 
         assertEquals(Math.sqrt(2.0), a.distance(b), 0);
     }
+
+    @Test
+    public void testOrientationExpectPositive()
+    {
+        Point p = new Point(0, 1);
+        Point q = new Point(2, 3);
+        Point r = new Point(5, 9);
+
+        assertEquals(6.0, p.orientation(q, r), 0.00000001);
+    }
+
+    @Test
+    public void testOrientationLinearExpectZero()
+    {
+        Point p = new Point(-1, -1);
+        Point q = new Point(1, 1);
+        Point r = new Point(3, 3);
+
+        assertEquals(0.0, p.orientation(q, r), 0);
+    }
+
+    @Test
+    public void testOrientationExpectNegative()
+    {
+        Point p = new Point(5, 9);
+        Point q = new Point(2, 3);
+        Point r = new Point(0, 1);
+
+        assertEquals(-6.0, p.orientation(q, r), 0.0000000001);
+    }
 }

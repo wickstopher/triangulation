@@ -5,6 +5,7 @@ import com.wicks.pointtools.Line;
 import com.wicks.pointtools.Point;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by wickstopher on 10/22/16.
@@ -59,9 +60,32 @@ public class MonotonePolygonTriangulation
                 // in either case, v is added to the reflex chain
                 reflexChain.push(v);
             }
+            if (vPrev != v) {
+            }
             vPrev = v;
         }
+
+        List<Point> lowerChain = sortedPoints.stream().
+                filter(p -> p.getChainPosition() != ReflexChainPoint.ChainPosition.UPPER_CHAIN)
+                .collect(Collectors.toList());
+        List<Point> upperChain = sortedPoints.stream().
+                filter(p -> p.getChainPosition() != ReflexChainPoint.ChainPosition.LOWER_CHAIN).
+                collect(Collectors.toList());
+
+        populateListWithChainPoints(lowerChain, diagonals);
+        populateListWithChainPoints(upperChain, diagonals);
+
         return diagonals;
+    }
+
+    private void populateListWithChainPoints(List<Point> chain, List<Line> diagonals)
+    {
+        Point prev = chain.remove(chain.size() - 1);
+        do {
+            Point next = chain.remove(chain.size() - 1);
+            diagonals.add(new Line(prev, next));
+            prev = next;
+        } while (!chain.isEmpty());
     }
 
     /**

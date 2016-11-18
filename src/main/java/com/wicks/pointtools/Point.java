@@ -1,5 +1,9 @@
 package com.wicks.pointtools;
 
+import Jama.Matrix;
+
+import java.util.*;
+
 /**
  * Created by wickstopher on 10/8/16.
  */
@@ -76,6 +80,59 @@ public class Point implements Comparable
     public double distance(Point other)
     {
         return Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(y - other.y, 2));
+    }
+
+    public double orientation(Point q, Point r)
+    {
+        double[][] m = { {1, x, y}, {1, q.x, q.y}, {1, r.x, r.y} };
+        Matrix matrix = new Matrix(m);
+        return matrix.det();
+    }
+
+    private static ArrayList<Point> computePartialHull(ArrayList<Point> points)
+    {
+        ArrayList<Point> partialHull = new ArrayList<Point>();
+        while (!points.isEmpty()) {
+            Point p = points.remove(points.size() - 1);
+            while (partialHull.size() >= 2) {
+                Point q = partialHull.get(partialHull.size() - 1);
+                Point r = partialHull.get(partialHull.size() - 2);
+                if (p.orientation(q, r) >= 0) {
+                    partialHull.remove(partialHull.size() - 1);
+                }
+                else {
+                    break;
+                }
+            }
+            partialHull.add(p);
+        }
+        return partialHull;
+    }
+
+    private static ArrayList<Point> computeUpperHull(ArrayList<Point> points)
+    {
+        ArrayList<Point> copy = new ArrayList<>(points);
+        Collections.sort(copy);
+        return computePartialHull(copy);
+    }
+
+    private static ArrayList<Point> computeLowerHull(ArrayList<Point> points)
+    {
+        ArrayList<Point> copy = new ArrayList<>(points);
+        Collections.sort(copy);
+        Collections.reverse(copy);
+        return computePartialHull(copy);
+    }
+
+    public static List<Point> grahamsScan(ArrayList<Point> points)
+    {
+        List<Point> upperHull = computeUpperHull(points);
+        List<Point> lowerHull = computeLowerHull(points);
+
+        upperHull = upperHull.subList(1, upperHull.size());
+        lowerHull = lowerHull.subList(1, lowerHull.size());
+        lowerHull.addAll(upperHull);
+        return lowerHull;
     }
 
     public String toString()
