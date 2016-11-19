@@ -1,88 +1,81 @@
 package com.wicks.triangulation;
 
 import com.google.common.collect.TreeMultiset;
+import com.sun.net.httpserver.Filter;
 import com.wicks.pointtools.Line;
 import com.wicks.pointtools.Point;
+import com.wicks.triangulation.ReflexChainPoint.ChainPosition;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by wickstopher on 10/22/16.
  */
 public class MonotonePolygonTriangulation
 {
-    ArrayList<ReflexChainPoint> sortedPoints;
+    private List<ReflexChainPoint> points;
+    private Stack<ReflexChainPoint> reflexChain;
+    private ReflexChainPoint u;
+    private ReflexChainPoint vPrev;
+    private int nextIndex;
 
-    public MonotonePolygonTriangulation()
+    public MonotonePolygonTriangulation(List<Point> polygon)
     {
-
+        if (polygon.size() < 2) {
+            throw new IllegalStateException("Polygon size must be at least 2!");
+        }
+        points = translateInput(polygon);
+        reflexChain = new Stack<>();
+        u = points.get(0);
+        vPrev = u;
+        reflexChain.push(u);
+        nextIndex = 1;
     }
 
-    public List<Line> triangulatePolygon(List<Point> polygon)
+    public boolean hasNext()
     {
-        sortedPoints = translateInput(polygon);
+        return nextIndex < points.size();
+    }
+
+    public List<Line> getNextDiagonals()
+    {
+        ReflexChainPoint v = points.get(nextIndex++);
         List<Line> diagonals = new ArrayList<>();
-        Stack<ReflexChainPoint> reflexChain = new Stack<>();
-        ReflexChainPoint u = sortedPoints.get(0);
-        ReflexChainPoint vPrev = u;
-        reflexChain.push(u);
 
-        for (ReflexChainPoint v : sortedPoints.subList(1, sortedPoints.size())) {
+        ChainPosition vPosition = v.getChainPosition();
+        ChainPosition vPrevPosition = vPrev.getChainPosition();
 
-            ReflexChainPoint.ChainPosition vPosition = v.getChainPosition();
-            ReflexChainPoint.ChainPosition vPrevPosition= vPrev.getChainPosition();
-
-            // Right/Left endpoints can be considered part of either the upper or lower chain (TODO: verify this)
-            if (vPosition != vPrevPosition && vPrevPosition != ReflexChainPoint.ChainPosition.LEFT_ENDPOINT && vPosition != ReflexChainPoint.ChainPosition.RIGHT_ENDPOINT) {
-
-                while (!reflexChain.isEmpty() && reflexChain.peek() != u) { // reference comparison should be sufficient here
-                    diagonals.add(new Line(v, reflexChain.pop()));
-                }
-                u = reflexChain.push(vPrev);
-            } else {
-                if (!vPrev.isReflexVertex()) {
-                    ReflexChainPoint prev = reflexChain.pop();
-                    if (!reflexChain.isEmpty()) {
-                        ReflexChainPoint twoPrev = reflexChain.peek();
-                        while (prev.getAngle(twoPrev, v) < 180) {
-                            diagonals.add(new Line(v, prev));
-                            prev = reflexChain.pop();
-                            if (reflexChain.isEmpty()) break;
-                            twoPrev = reflexChain.peek();
-                        }
+        if (!onTheSameChain(vPrevPosition, vPosition)) {
+            while (!reflexChain.isEmpty() && reflexChain.peek() != u) { // reference comparison should suffice here
+                diagonals.add(new Line(v, reflexChain.pop()));
+            }
+            u = reflexChain.push(vPrev);
+        } else {
+            if (!vPrev.isReflexVertex()) {
+                ReflexChainPoint prev = reflexChain.pop();
+                if (!reflexChain.isEmpty()) {
+                    ReflexChainPoint twoPrev = reflexChain.peek();
+                    while (prev.getAngle(twoPrev, v) < 180) {
+                        diagonals.add(new Line(v, prev));
+                        prev = reflexChain.pop();
+                        if (reflexChain.isEmpty()) break;
+                        twoPrev = reflexChain.peek();
                     }
-                    reflexChain.push(prev); // last visible vertex
                 }
-                // in either case, v is added to the reflex chain
-                reflexChain.push(v);
+                reflexChain.push(prev); // last visible vertex
             }
-            if (vPrev != v) {
-            }
-            vPrev = v;
         }
-
-        List<Point> lowerChain = sortedPoints.stream().
-                filter(p -> p.getChainPosition() != ReflexChainPoint.ChainPosition.UPPER_CHAIN)
-                .collect(Collectors.toList());
-        List<Point> upperChain = sortedPoints.stream().
-                filter(p -> p.getChainPosition() != ReflexChainPoint.ChainPosition.LOWER_CHAIN).
-                collect(Collectors.toList());
-
-        populateListWithChainPoints(lowerChain, diagonals);
-        populateListWithChainPoints(upperChain, diagonals);
-
+        // in either case, v is added to the reflex chain
+        reflexChain.push(v);
+        vPrev = v;
         return diagonals;
     }
 
-    private void populateListWithChainPoints(List<Point> chain, List<Line> diagonals)
+    private boolean onTheSameChain(ChainPosition a, ChainPosition b)
     {
-        Point prev = chain.remove(chain.size() - 1);
-        do {
-            Point next = chain.remove(chain.size() - 1);
-            diagonals.add(new Line(prev, next));
-            prev = next;
-        } while (!chain.isEmpty());
+        // Right/Left endpoints can be considered part of either the upper or lower chain
+        return a == b || a == ChainPosition.LEFT_ENDPOINT || b == ChainPosition.LEFT_ENDPOINT
+                || a == ChainPosition.RIGHT_ENDPOINT || b == ChainPosition.RIGHT_ENDPOINT;
     }
 
     /**
@@ -90,7 +83,7 @@ public class MonotonePolygonTriangulation
      * @param polygon
      * @return
      */
-    public ArrayList<ReflexChainPoint> translateInput(List<Point> polygon)
+    private static ArrayList<ReflexChainPoint> translateInput(List<Point> polygon)
     {
         int minIndex = polygon.indexOf(Collections.min(polygon));
         int maxIndex = polygon.indexOf(Collections.max(polygon));
@@ -123,14 +116,14 @@ public class MonotonePolygonTriangulation
         return new ArrayList(output);
     }
 
-    private int computeNextIndex(int i, int size) {
+    private static int computeNextIndex(int i, int size) {
         if (i == size - 1) {
             return 0;
         }
         return i + 1;
     }
 
-    private int computePreviousIndex(int i, int size) {
+    private static int computePreviousIndex(int i, int size) {
         if (i == 0) {
             return size - 1;
         }

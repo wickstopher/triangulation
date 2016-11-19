@@ -17,16 +17,18 @@ public class PolygonTriangulation extends PApplet
     }
 
     private ArrayList<Point> points;
-    private MonotonePolygonTriangulation mpt;
-    private List<Line> triangulation;
+    private MonotonePolygonTriangulation triangulation;
     private HullVisualizationState hullState;
     private boolean hullVisualize;
+    private boolean triangulationVisualize;
+    private boolean visualizationPaused;
 
     public void settings()
     {
         points = new ArrayList<>();
-        mpt = new MonotonePolygonTriangulation();
         hullVisualize = false;
+        triangulationVisualize = false;
+        visualizationPaused = false;
         size(750, 750);
     }
 
@@ -38,27 +40,44 @@ public class PolygonTriangulation extends PApplet
 
     public void mousePressed()
     {
-        if (mouseY < 650) {
-            addUserPoint();
-        } else if (mouseX < (750 / 2)) {
-            try {
-                startTriangulationVisualization();
-            } catch (Exception e) {}
+        if (hullVisualize) {
+            // do nothing for now
+        } else if (triangulationVisualize) {
+            visualizationPaused = false;
         } else {
-            reset();
+            if (mouseY < 650) {
+                addUserPoint();
+            } else if (mouseX < (750 / 2)) {
+                try {
+                    startTriangulationVisualization();
+                } catch (Exception e) {
+                }
+            } else {
+                reset();
+            }
         }
     }
 
     public void draw()
     {
-        if (hullVisualize) {
+        if (hullVisualize && !visualizationPaused) {
             if (hullState.hasNext()) {
                 drawLine(hullState.getNextLine());
                 delay(50);
             } else {
                 hullVisualize = false;
-                triangulation = mpt.triangulatePolygon(hullState.getHull());
-                triangulation.forEach(line -> drawLine(line));
+                triangulation = new MonotonePolygonTriangulation(hullState.getHull());
+                triangulationVisualize = true;
+            }
+        }
+
+        if (triangulationVisualize && !visualizationPaused) {
+            if (triangulation.hasNext()) {
+                List<Line> diagonals = triangulation.getNextDiagonals();
+                diagonals.forEach(line -> drawLine(line));
+                visualizationPaused = true;
+            } else {
+                triangulationVisualize = false;
             }
         }
     }
@@ -157,6 +176,6 @@ class HullVisualizationState
 
     public List<Point> getHull()
     {
-        return convexHull;
+        return new ArrayList<>(convexHull);
     }
 }
