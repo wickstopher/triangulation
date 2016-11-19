@@ -62,7 +62,11 @@ public class MonotonePolygonTriangulation
 
         if (vPrevPosition != vPosition) {
             while (!reflexChain.isEmpty() && reflexChain.peek() != u) { // reference comparison should suffice here
-                diagonals.add(new Line(v, reflexChain.pop()));
+                ReflexChainPoint prev = reflexChain.pop();
+                if ((vPosition != ChainPosition.RIGHT_ENDPOINT && vPosition != ChainPosition.LEFT_ENDPOINT)
+                        || prev != vPrev) {
+                    diagonals.add(new Line(v, prev));
+                }
             }
             u = reflexChain.push(vPrev);
         } else {
