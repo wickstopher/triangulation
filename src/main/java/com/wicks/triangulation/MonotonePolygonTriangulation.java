@@ -78,6 +78,10 @@ public class MonotonePolygonTriangulation
                     }
                 }
                 reflexChain.push(prev); // last visible vertex
+            } else if (vPosition == ChainPosition.RIGHT_ENDPOINT) {
+                while (reflexChain.peek() != u) {
+                    diagonals.add(new Line(reflexChain.pop(), u));
+                }
             }
         }
         // in either case, v is added to the reflex chain
