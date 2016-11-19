@@ -66,11 +66,11 @@ public class MonotonePolygonTriangulation
             }
             u = reflexChain.push(vPrev);
         } else {
-            if (!vPrev.isReflexVertex()) {
+            if (!vPrev.isReflexVertex() && reflexChain.peek() != u) {
                 ReflexChainPoint prev = reflexChain.pop();
                 if (!reflexChain.isEmpty()) {
                     ReflexChainPoint twoPrev = reflexChain.peek();
-                    while (prev.getAngle(twoPrev, v) < 180) {
+                    while (prev.getAngle(twoPrev, v) < 180 && reflexChain.peek() != u) {
                         diagonals.add(new Line(v, prev));
                         prev = reflexChain.pop();
                         if (reflexChain.isEmpty()) break;
