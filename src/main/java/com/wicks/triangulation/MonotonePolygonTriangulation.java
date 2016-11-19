@@ -15,6 +15,7 @@ public class MonotonePolygonTriangulation
 {
     private List<ReflexChainPoint> points;
     private Stack<ReflexChainPoint> reflexChain;
+    private List<Line> diagonals;
     private ReflexChainPoint u;
     private ReflexChainPoint vPrev;
     private int nextIndex;
@@ -26,24 +27,34 @@ public class MonotonePolygonTriangulation
         }
         points = translateInput(polygon);
         reflexChain = new Stack<>();
+        diagonals = new ArrayList<>();
         u = points.get(0);
         vPrev = u;
         reflexChain.push(u);
         nextIndex = 0;
     }
 
-    public boolean hasNext()
+    public boolean hasNextStatus()
     {
         return nextIndex < points.size();
     }
 
-    public StatusInfo getNextStatus()
+    public double getXPosition()
+    {
+        return vPrev.x;
+    }
+
+    public List<Line> getDiagonals()
+    {
+        return new ArrayList<>(diagonals);
+    }
+
+    public void updateStatus()
     {
         ReflexChainPoint v = points.get(nextIndex++);
-        List<Line> diagonals = new ArrayList<>();
 
         if (nextIndex == 1) {
-            return new StatusInfo(v.x, diagonals);
+            return;
         }
 
         ChainPosition vPosition = v.getChainPosition();
@@ -72,7 +83,6 @@ public class MonotonePolygonTriangulation
         // in either case, v is added to the reflex chain
         reflexChain.push(v);
         vPrev = v;
-        return new StatusInfo(v.x, diagonals);
     }
 
     private boolean onTheSameChain(ChainPosition a, ChainPosition b)
@@ -132,27 +142,5 @@ public class MonotonePolygonTriangulation
             return size - 1;
         }
         return i - 1;
-    }
-}
-
-class StatusInfo
-{
-    private double xPosition;
-    private List<Line> diagonals;
-
-    public StatusInfo(double xPosition, List<Line> diagonals)
-    {
-        this.xPosition = xPosition;
-        this.diagonals = diagonals;
-    }
-
-    public List<Line> getDiagonals()
-    {
-        return new ArrayList<>(diagonals);
-    }
-
-    public double getXPosition()
-    {
-        return xPosition;
     }
 }

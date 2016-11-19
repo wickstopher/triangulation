@@ -71,10 +71,10 @@ public class PolygonTriangulation extends PApplet
         }
 
         if (triangulationVisualize && !visualizationPaused) {
-            if (triangulation.hasNext()) {
-                StatusInfo status = triangulation.getNextStatus();
-                status.getDiagonals().forEach(line -> drawLine(line));
-                drawSweepline(status.getXPosition());
+            if (triangulation.hasNextStatus()) {
+                triangulation.updateStatus();
+                triangulation.getDiagonals().forEach(line -> drawLine(line));
+                drawSweepline(triangulation.getXPosition());
                 visualizationPaused = true;
             } else {
                 triangulationVisualize = false;
@@ -96,7 +96,7 @@ public class PolygonTriangulation extends PApplet
 
     public void clear()
     {
-        super.clear();
+        //super.clear();
         defaults();
     }
 
