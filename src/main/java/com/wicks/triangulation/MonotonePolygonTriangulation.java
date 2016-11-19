@@ -25,9 +25,6 @@ public class MonotonePolygonTriangulation
         List<Line> diagonals = new ArrayList<>();
         Stack<ReflexChainPoint> reflexChain = new Stack<>();
         ReflexChainPoint u = sortedPoints.get(0);
-        if (u.getChainPosition() != ReflexChainPoint.ChainPosition.LEFT_ENDPOINT) {
-            throw new RuntimeException("WTF");
-        }
         ReflexChainPoint vPrev = u;
         reflexChain.push(u);
 
