@@ -12,24 +12,22 @@ import java.util.List;
  */
 public class PolygonTriangulation extends PApplet
 {
-    private enum State {
-        ADDING_POINTS;
-    }
-
     private ArrayList<Point> points;
     private MonotonePolygonTriangulation triangulation;
     private HullVisualizationState hullState;
+
     private boolean hullVisualize;
     private boolean triangulationVisualize;
     private boolean visualizationPaused;
 
     public void settings()
     {
+        size(750, 750);
         points = new ArrayList<>();
+
         hullVisualize = false;
         triangulationVisualize = false;
         visualizationPaused = false;
-        size(750, 750);
     }
 
     private void reset()
@@ -37,6 +35,7 @@ public class PolygonTriangulation extends PApplet
         points = new ArrayList<>();
         clear();
     }
+
 
     public void mousePressed()
     {
@@ -73,8 +72,9 @@ public class PolygonTriangulation extends PApplet
 
         if (triangulationVisualize && !visualizationPaused) {
             if (triangulation.hasNext()) {
-                List<Line> diagonals = triangulation.getNextDiagonals();
-                diagonals.forEach(line -> drawLine(line));
+                StatusInfo status = triangulation.getNextStatus();
+                status.getDiagonals().forEach(line -> drawLine(line));
+                drawSweepline(status.getXPosition());
                 visualizationPaused = true;
             } else {
                 triangulationVisualize = false;
@@ -128,6 +128,11 @@ public class PolygonTriangulation extends PApplet
         float y = (float) point.y;
         ellipse(x, y, 5, 5);
         redraw();
+    }
+
+    private void drawSweepline(double x)
+    {
+        line((float) x, 1000, (float) x, -1000);
     }
 
     public static void main(String[] args)

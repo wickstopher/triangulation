@@ -29,7 +29,7 @@ public class MonotonePolygonTriangulation
         u = points.get(0);
         vPrev = u;
         reflexChain.push(u);
-        nextIndex = 1;
+        nextIndex = 0;
     }
 
     public boolean hasNext()
@@ -37,10 +37,14 @@ public class MonotonePolygonTriangulation
         return nextIndex < points.size();
     }
 
-    public List<Line> getNextDiagonals()
+    public StatusInfo getNextStatus()
     {
         ReflexChainPoint v = points.get(nextIndex++);
         List<Line> diagonals = new ArrayList<>();
+
+        if (nextIndex == 1) {
+            return new StatusInfo(v.x, diagonals);
+        }
 
         ChainPosition vPosition = v.getChainPosition();
         ChainPosition vPrevPosition = vPrev.getChainPosition();
@@ -68,7 +72,7 @@ public class MonotonePolygonTriangulation
         // in either case, v is added to the reflex chain
         reflexChain.push(v);
         vPrev = v;
-        return diagonals;
+        return new StatusInfo(v.x, diagonals);
     }
 
     private boolean onTheSameChain(ChainPosition a, ChainPosition b)
@@ -128,5 +132,27 @@ public class MonotonePolygonTriangulation
             return size - 1;
         }
         return i - 1;
+    }
+}
+
+class StatusInfo
+{
+    private double xPosition;
+    private List<Line> diagonals;
+
+    public StatusInfo(double xPosition, List<Line> diagonals)
+    {
+        this.xPosition = xPosition;
+        this.diagonals = diagonals;
+    }
+
+    public List<Line> getDiagonals()
+    {
+        return new ArrayList<>(diagonals);
+    }
+
+    public double getXPosition()
+    {
+        return xPosition;
     }
 }
