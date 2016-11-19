@@ -14,7 +14,7 @@ public abstract class ReflexChainPoint extends Point
     public ReflexChainPoint(Point point, Point previous, Point next)
     {
         super(point.x, point.y);
-        isReflexVertex = point.getAngle(previous, next)  >= 180;
+        isReflexVertex = point.getAngle(previous, next)  < 180;
     }
 
     public abstract ChainPosition getChainPosition();

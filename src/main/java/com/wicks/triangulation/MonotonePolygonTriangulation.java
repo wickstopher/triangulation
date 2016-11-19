@@ -60,7 +60,7 @@ public class MonotonePolygonTriangulation
         ChainPosition vPosition = v.getChainPosition();
         ChainPosition vPrevPosition = vPrev.getChainPosition();
 
-        if (!onTheSameChain(vPrevPosition, vPosition)) {
+        if (vPrevPosition != vPosition) {
             while (!reflexChain.isEmpty() && reflexChain.peek() != u) { // reference comparison should suffice here
                 diagonals.add(new Line(v, reflexChain.pop()));
             }
@@ -78,22 +78,11 @@ public class MonotonePolygonTriangulation
                     }
                 }
                 reflexChain.push(prev); // last visible vertex
-            } else if (vPosition == ChainPosition.RIGHT_ENDPOINT) {
-                while (reflexChain.peek() != u) {
-                    diagonals.add(new Line(reflexChain.pop(), u));
-                }
             }
         }
         // in either case, v is added to the reflex chain
         reflexChain.push(v);
         vPrev = v;
-    }
-
-    private boolean onTheSameChain(ChainPosition a, ChainPosition b)
-    {
-        // Right/Left endpoints can be considered part of either the upper or lower chain
-        return a == b || a == ChainPosition.LEFT_ENDPOINT || b == ChainPosition.LEFT_ENDPOINT
-                || a == ChainPosition.RIGHT_ENDPOINT || b == ChainPosition.RIGHT_ENDPOINT;
     }
 
     /**
