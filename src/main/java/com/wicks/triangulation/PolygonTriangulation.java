@@ -83,7 +83,7 @@ public class PolygonTriangulation extends PApplet
                 triangulation.getDiagonals().forEach(line -> drawLine(line));
                 drawSweepline(triangulation.getXPosition());
 
-                //visualizationPaused = true;
+                visualizationPaused = true;
             } else {
                 System.out.printf("Total number of diagonals: %d\n", triangulation.getDiagonals().size());
                 triangulationVisualize = false;

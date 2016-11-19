@@ -1,7 +1,6 @@
 package com.wicks.triangulation;
 
 import com.google.common.collect.TreeMultiset;
-import com.sun.net.httpserver.Filter;
 import com.wicks.pointtools.Line;
 import com.wicks.pointtools.Point;
 import com.wicks.triangulation.ReflexChainPoint.ChainPosition;
