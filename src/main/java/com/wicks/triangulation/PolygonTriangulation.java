@@ -59,6 +59,10 @@ public class PolygonTriangulation extends PApplet
 
     public void draw()
     {
+        if (points.isEmpty()) {
+            // initial state
+            defaults();
+        }
         if (hullVisualize && !visualizationPaused) {
             if (hullState.hasNext()) {
                 drawLine(hullState.getNextLine());
@@ -73,8 +77,12 @@ public class PolygonTriangulation extends PApplet
         if (triangulationVisualize && !visualizationPaused) {
             if (triangulation.hasNextStatus()) {
                 triangulation.updateStatus();
+
+                defaults();
+                hullState.getEdges().forEach(line -> drawLine(line));
                 triangulation.getDiagonals().forEach(line -> drawLine(line));
                 drawSweepline(triangulation.getXPosition());
+
                 visualizationPaused = true;
             } else {
                 triangulationVisualize = false;
@@ -144,6 +152,7 @@ public class PolygonTriangulation extends PApplet
 class HullVisualizationState
 {
     private List<Point> convexHull;
+    private List<Line> edges;
     private Point prev;
 
     private int nextIndex;
@@ -154,6 +163,7 @@ class HullVisualizationState
         if (convexHull.size() < 2) {
             throw new IllegalStateException("Convex hull must contain at least 2 points!");
         }
+        edges = new ArrayList<>();
         this.convexHull = convexHull;
         nextIndex = 1;
         prev = convexHull.get(0);
@@ -162,16 +172,18 @@ class HullVisualizationState
 
     public Line getNextLine()
     {
+        Line nextLine;
         if (nextIndex < convexHull.size()) {
             Point next = convexHull.get(nextIndex++);
-            Line nextLine = new Line(prev, next);
+            nextLine = new Line(prev, next);
             prev = next;
-            return nextLine;
         }
         else {
             hasNext = false;
-            return new Line(prev, convexHull.get(0));
+            nextLine = new Line(prev, convexHull.get(0));
         }
+        edges.add(nextLine);
+        return nextLine;
     }
 
     public boolean hasNext()
@@ -182,5 +194,10 @@ class HullVisualizationState
     public List<Point> getHull()
     {
         return new ArrayList<>(convexHull);
+    }
+
+    public List<Line> getEdges()
+    {
+        return new ArrayList<>(edges);
     }
 }
