@@ -16,48 +16,75 @@ import java.util.stream.IntStream;
  */
 public class SampleMain extends PApplet
 {
+    private enum State {
+        ADDING_POINTS;
+    }
+
     private ArrayList<Point> points;
-    private List<Point> hull;
-    private List<Line> triangulation;
     private MonotonePolygonTriangulation mpt;
-    private Random random;
+    private List<Line> triangulation;
 
     public void settings()
     {
-        random = new Random();
         points = new ArrayList<>();
-        IntStream.range(0, 200).forEach(i -> points.add(new Point(random.nextInt(450) + 200, random.nextInt(450) + 200)));
-        hull = Point.grahamsScan(points);
         mpt = new MonotonePolygonTriangulation();
-        triangulation = mpt.triangulatePolygon(hull);
         size(750, 750);
+    }
+
+    private void reset()
+    {
+        points = new ArrayList<>();
+        clear();
     }
 
     public void draw()
     {
-        //triangulation = mpt.triangulatePolygon(polygon);
-        hull.forEach(p -> point(p));
-        triangulation.forEach(l -> line(l));
     }
 
-    public static void main(String[] args)
+    public void mousePressed()
     {
-//        List<Point> polygon = new ArrayList<>();
-//        polygon.add(new Point(1, 2));
-//        polygon.add(new Point(2, 3));
-//        polygon.add(new Point(3, 3));
-//        polygon.add(new Point(4, 4));
-//        polygon.add(new Point(5, 3));
-//        polygon.add(new Point(4.5, 1.5));
-//        polygon.add(new Point(3, 1));
-//        polygon.add(new Point(2, 1));
-//        MonotonePolygonTriangulation mpt = new MonotonePolygonTriangulation();
-//        List<Line> triangulation = mpt.triangulatePolygon(polygon);
-//        triangulation.forEach(line -> System.out.println(line));
-        PApplet.main("com.wicks.triangulation.SampleMain");
+        if (mouseY < 650) {
+            addUserPoint();
+        } else if (mouseX < (750 / 2)) {
+            startTriangulationVisualization();
+        } else {
+            reset();
+        }
     }
 
-    public void line(Line line)
+    private void startTriangulationVisualization()
+    {
+        clear();
+        List<Point> convexHull = Point.grahamsScan(points);
+        Point prev = convexHull.get(0);
+        for (Point p : convexHull.subList(0, convexHull.size())) {
+            drawLine(new Line(prev, p));
+            prev = p;
+        }
+        drawLine(new Line(prev, convexHull.get(0)));
+        triangulation = mpt.triangulatePolygon(convexHull);
+        triangulation.forEach(line -> drawLine(line));
+    }
+
+    public void clear()
+    {
+        super.clear();
+        defaults();
+    }
+
+    private void defaults()
+    {
+        background(223);
+    }
+
+    private void addUserPoint()
+    {
+        Point p = new Point(mouseX, mouseY);
+        points.add(p);
+        drawPoint(p);
+    }
+
+    private void drawLine(Line line)
     {
         float x1 = (float) line.a.x;
         float y1 = (float)line.a.y;
@@ -66,11 +93,15 @@ public class SampleMain extends PApplet
         line(x1, y1, x2, y2);
     }
 
-    public void point(Point point)
+    private void drawPoint(Point point)
     {
         float x = (float) point.x;
         float y = (float) point.y;
         ellipse(x, y, 5, 5);
     }
 
+    public static void main(String[] args)
+    {
+        PApplet.main("com.wicks.triangulation.SampleMain");
+    }
 }
