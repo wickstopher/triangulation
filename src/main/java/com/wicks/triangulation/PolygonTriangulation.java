@@ -2,6 +2,7 @@ package com.wicks.triangulation;
 
 import com.wicks.pointtools.Line;
 import com.wicks.pointtools.Point;
+import com.wicks.pointtools.Polygon;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -15,8 +16,10 @@ public class PolygonTriangulation extends PApplet
     private ArrayList<Point> points;
     private MonotonePolygonTriangulation triangulation;
     private HullVisualizationState hullState;
+    private PolygonDrawState polygonDrawState;
 
     private boolean hullVisualize;
+    private boolean polygonVisualize;
     private boolean triangulationVisualize;
     private boolean visualizationPaused;
 
@@ -33,7 +36,7 @@ public class PolygonTriangulation extends PApplet
     private void reset()
     {
         points = new ArrayList<>();
-        clear();
+        defaults();
     }
 
 
@@ -74,12 +77,24 @@ public class PolygonTriangulation extends PApplet
             }
         }
 
+        if (polygonVisualize && !visualizationPaused) {
+            if (polygonDrawState.hasNext()) {
+                drawLine(polygonDrawState.getNextLine());
+                delay(50);
+            } else {
+                polygonVisualize = false;
+                triangulation = new MonotonePolygonTriangulation(polygonDrawState.getVertices());
+                triangulationVisualize = true;
+            }
+        }
+
         if (triangulationVisualize && !visualizationPaused) {
             if (triangulation.hasNextStatus()) {
                 triangulation.updateStatus();
 
                 defaults();
-                hullState.getEdges().forEach(line -> drawLine(line));
+                //hullState.getEdges().forEach(line -> drawLine(line));
+                polygonDrawState.getEdges().forEach(line -> drawLine(line));
                 triangulation.getDiagonals().forEach(line -> drawLine(line));
                 drawSweepline(triangulation.getXPosition());
 
@@ -97,16 +112,11 @@ public class PolygonTriangulation extends PApplet
             System.out.println("Please add some more points!");
             return;
         }
-        clear();
-
-        hullState = new HullVisualizationState(Point.grahamsScan(points));
-        hullVisualize = true;
-    }
-
-    public void clear()
-    {
-        //super.clear();
         defaults();
+        //hullState = new HullVisualizationState(Point.grahamsScan(points));
+        //hullVisualize = true;
+        polygonDrawState = new PolygonDrawState(points);
+        polygonVisualize = true;
     }
 
     private void defaults()
@@ -147,6 +157,42 @@ public class PolygonTriangulation extends PApplet
     public static void main(String[] args)
     {
         PApplet.main("com.wicks.triangulation.PolygonTriangulation");
+    }
+}
+
+class PolygonDrawState
+{
+    Polygon polygon;
+    List<Point> vertices;
+    List<Line> edges;
+    private int nextIndex;
+
+    public PolygonDrawState(List<Point> vertices)
+    {
+        this.vertices = vertices;
+        polygon = new Polygon(vertices);
+        edges = polygon.getEdges();
+        nextIndex = 0;
+    }
+
+    public List<Line> getEdges()
+    {
+        return new ArrayList<>(edges);
+    }
+
+    public List<Point> getVertices()
+    {
+        return new ArrayList<>(vertices);
+    }
+
+    public boolean hasNext()
+    {
+        return nextIndex < edges.size();
+    }
+
+    public Line getNextLine()
+    {
+        return edges.get(nextIndex++);
     }
 }
 
