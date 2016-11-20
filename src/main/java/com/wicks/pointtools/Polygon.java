@@ -12,17 +12,17 @@ import java.util.List;
 public class Polygon
 {
     private List<PolygonVertex> vertices;
+    private List<PolygonEdge> edges;
 
     public Polygon(List<Point> points)
     {
         initializeVertices(points);
+        initializeEdges();
     }
 
     public List<Line> getEdges()
     {
-        List<Line> edges = new ArrayList<>();
-        vertices.forEach(v -> edges.add(new Line(v, v.getNext())));
-        return edges;
+        return new ArrayList<>(edges);
     }
 
     public List<PolygonVertex> getSortedVertices()
@@ -37,6 +37,12 @@ public class Polygon
         return new ArrayList<>(vertices);
     }
 
+    private void initializeEdges()
+    {
+        edges = new ArrayList<>();
+        vertices.forEach(v -> edges.add(new PolygonEdge(v, v.getNext())));
+    }
+
     private void initializeVertices(List<Point> points)
     {
         vertices = new ArrayList<>(points.size());
@@ -46,41 +52,5 @@ public class Polygon
             vertices.get(i).setNext(vertices.get(i + 1));
         }
         vertices.get(vertices.size() - 1).setNext(vertices.get(0));
-    }
-}
-
-class PolygonVertex extends Point
-{
-    private PolygonVertex previous;
-    private PolygonVertex next;
-
-    public PolygonVertex(double x, double y, PolygonVertex previous, PolygonVertex next)
-    {
-        super(x, y);
-        this.previous = previous;
-        this.next = next;
-    }
-
-    public PolygonVertex getNext()
-    {
-        return next;
-    }
-
-    public PolygonVertex getPrevious()
-    {
-        return previous;
-    }
-
-    public PolygonVertex(Point p)
-    {
-        super(p.x, p.y);
-        this.previous = null;
-        this.next = null;
-    }
-
-    protected void setNext(PolygonVertex next)
-    {
-        this.next = next;
-        next.previous = this;
     }
 }
