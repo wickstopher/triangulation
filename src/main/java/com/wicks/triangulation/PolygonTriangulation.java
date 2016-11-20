@@ -15,6 +15,7 @@ public class PolygonTriangulation extends PApplet
 {
     private ArrayList<Point> points;
     private MonotonePolygonTriangulation triangulation;
+    private MonotonePolygonSubdivision subdivision;
     private HullVisualizationState hullState;
     private PolygonDrawState polygonDrawState;
 
@@ -27,7 +28,6 @@ public class PolygonTriangulation extends PApplet
     {
         size(750, 750);
         points = new ArrayList<>();
-
         hullVisualize = false;
         triangulationVisualize = false;
         visualizationPaused = false;
@@ -42,13 +42,13 @@ public class PolygonTriangulation extends PApplet
 
     public void mousePressed()
     {
-        if (hullVisualize) {
+        if (hullVisualize || polygonVisualize) {
             // do nothing for now
         } else if (triangulationVisualize) {
             visualizationPaused = false;
         } else {
             if (mouseY < 650) {
-                addUserPoint();
+                points.add(new Point(mouseX, mouseY));
             } else if (mouseX < (750 / 2)) {
                 try {
                     startTriangulationVisualization();
@@ -62,9 +62,11 @@ public class PolygonTriangulation extends PApplet
 
     public void draw()
     {
-        if (points.isEmpty()) {
-            // initial state
+        if (!hullVisualize && !polygonVisualize && !triangulationVisualize) {
             defaults();
+            fill(123);
+            text("x: " + mouseX + "y: " + mouseY, mouseX, mouseY);
+            points.forEach(p -> drawPoint(p));
         }
         if (hullVisualize && !visualizationPaused) {
             if (hullState.hasNext()) {
@@ -82,27 +84,31 @@ public class PolygonTriangulation extends PApplet
                 drawLine(polygonDrawState.getNextLine());
                 delay(50);
             } else {
+
                 polygonVisualize = false;
+                subdivision = new MonotonePolygonSubdivision(polygonDrawState.polygon);
                 triangulation = new MonotonePolygonTriangulation(polygonDrawState.getVertices());
                 triangulationVisualize = true;
             }
         }
 
-        if (triangulationVisualize && !visualizationPaused) {
+        if (triangulationVisualize) {
             if (triangulation.hasNextStatus()) {
-                triangulation.updateStatus();
 
+                if (!visualizationPaused) {
+                    triangulation.updateStatus();
+                }
                 defaults();
+                text("x: " + mouseX + "y: " + mouseY, mouseX, mouseY);
                 //hullState.getEdges().forEach(line -> drawLine(line));
                 polygonDrawState.getEdges().forEach(line -> drawLine(line));
                 triangulation.getDiagonals().forEach(line -> drawLine(line));
                 drawSweepline(triangulation.getXPosition());
-
-                visualizationPaused = true;
             } else {
                 System.out.printf("Total number of diagonals: %d\n", triangulation.getDiagonals().size());
                 triangulationVisualize = false;
             }
+            visualizationPaused = true;
         }
     }
 
@@ -115,6 +121,7 @@ public class PolygonTriangulation extends PApplet
         defaults();
         //hullState = new HullVisualizationState(Point.grahamsScan(points));
         //hullVisualize = true;
+        visualizationPaused = false;
         polygonDrawState = new PolygonDrawState(points);
         polygonVisualize = true;
     }
@@ -122,13 +129,6 @@ public class PolygonTriangulation extends PApplet
     private void defaults()
     {
         background(223);
-    }
-
-    private void addUserPoint()
-    {
-        Point p = new Point(mouseX, mouseY);
-        points.add(p);
-        drawPoint(p);
     }
 
     private void drawLine(Line line)
