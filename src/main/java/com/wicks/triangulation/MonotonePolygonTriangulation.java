@@ -69,15 +69,19 @@ public class MonotonePolygonTriangulation
             }
             u = reflexChain.push(vPrev);
         } else {
-            if (!vPrev.isReflexVertex() && reflexChain.peek() != u) {
+            if (!vPrev.isReflexVertex()) {
                 ReflexChainPoint prev = reflexChain.pop();
                 if (!reflexChain.isEmpty()) {
                     ReflexChainPoint twoPrev = reflexChain.peek();
-                    while (prev.getAngle(twoPrev, v) < 180 && reflexChain.peek() != u) {
+                    while (prev.getAngle(twoPrev, v) < 180) {
                         diagonals.add(new Line(v, prev));
                         prev = reflexChain.pop();
                         if (reflexChain.isEmpty()) break;
                         twoPrev = reflexChain.peek();
+                    }
+                    if (twoPrev == u) {
+                        diagonals.add(new Line(v, u));
+                        u = prev;
                     }
                 }
                 reflexChain.push(prev); // last visible vertex
