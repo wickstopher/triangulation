@@ -60,30 +60,32 @@ public class Polygon
         PolygonVertex leftmost = Collections.min(vertices);
         leftmost.setVertexType(PolygonVertex.VertexType.Start);
         PolygonVertex current = leftmost.getNext();
-        boolean onLower = true;
 
         while (current != leftmost) {
+
             PolygonEdge previousEdge = current.getPreviousEdge();
             PolygonEdge nextEdge = current.getNextEdge();
             PolygonVertex.VertexType vertexType;
 
+            // Two left endpoints means a Start vetex or a Split vertex
             if (current == previousEdge.getLeftEndpoint() && current == nextEdge.getLeftEndpoint()) {
-                if (onLower) {
+                if (current.getUpperEdge() == previousEdge) {
                     vertexType = PolygonVertex.VertexType.Start;
                 } else {
                     vertexType = PolygonVertex.VertexType.Split;
                 }
+            // Two right endpoints means an End vertex or a Merge vertex
             } else if (current == previousEdge.getRightEndpoint() && current == nextEdge.getRightEndpoint()) {
-                if (onLower) {
-                    vertexType = PolygonVertex.VertexType.Merge;
-                } else {
+                if (current.getLowerEdge() == previousEdge) {
                     vertexType = PolygonVertex.VertexType.End;
+                } else {
+                    vertexType = PolygonVertex.VertexType.Merge;
                 }
+            // Lower
             } else if (current == previousEdge.getLeftEndpoint() && current == nextEdge.getRightEndpoint()) {
-                onLower = true;
                 vertexType = PolygonVertex.VertexType.Lower;
+            // Upper
             } else if (current == previousEdge.getRightEndpoint() && current == nextEdge.getLeftEndpoint()) {
-                onLower = false;
                 vertexType = PolygonVertex.VertexType.Upper;
             } else {
                 throw new RuntimeException("This should never happen.");

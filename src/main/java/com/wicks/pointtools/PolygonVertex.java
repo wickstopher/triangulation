@@ -72,29 +72,22 @@ public class PolygonVertex extends Point
 
     public PolygonEdge getUpperEdge()
     {
-        return getEdge(true);
+        PolygonVertex nextVertex = nextEdge.getLeftEndpoint() == this ?
+                nextEdge.getRightEndpoint() : nextEdge.getLeftEndpoint();
+        PolygonVertex previousVertex = previousEdge.getLeftEndpoint() == this ?
+                previousEdge.getRightEndpoint() : previousEdge.getLeftEndpoint();
+
+        return nextVertex.y >= previousVertex.y ? nextEdge : previousEdge;
     }
 
     public PolygonEdge getLowerEdge()
     {
-        return getEdge(false);
-    }
-
-    private PolygonEdge getEdge(boolean upper)
-    {
-        PolygonVertex a = nextEdge.getLeftEndpoint() == this ?
+        PolygonVertex nextVertex = nextEdge.getLeftEndpoint() == this ?
                 nextEdge.getRightEndpoint() : nextEdge.getLeftEndpoint();
-        PolygonVertex b = previousEdge.getLeftEndpoint() == this ?
-                previousEdge.getRightEndpoint() : nextEdge.getLeftEndpoint();
+        PolygonVertex previousVertex = previousEdge.getLeftEndpoint() == this ?
+                previousEdge.getRightEndpoint() : previousEdge.getLeftEndpoint();
 
-        if (a == this || b == this) {
-            throw new RuntimeException("That's bad");
-        }
-        if (upper) {
-            return a.y > b.y ? nextEdge : previousEdge;
-        } else {
-            return a.y > b.y ? previousEdge : nextEdge;
-        }
+        return nextVertex.y < previousVertex.y ? nextEdge : previousEdge;
     }
 
     public VertexType getVertexType()
