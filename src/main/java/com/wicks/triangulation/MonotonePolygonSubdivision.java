@@ -25,7 +25,7 @@ public class MonotonePolygonSubdivision
         this.polygon = polygon;
         this.newDiagonals = new ArrayList<>();
         this.events = new ArrayList<>();
-        polygon.getSortedVertices().forEach(v -> events.add(new SweepLineEvent(v)));
+        polygon.getSortedVertices().forEach(v -> events.add(SweepLineEvent.createEvent(v)));
         this.nextIndex = 0;
     }
 

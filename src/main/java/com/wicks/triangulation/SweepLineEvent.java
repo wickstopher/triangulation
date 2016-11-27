@@ -1,29 +1,17 @@
 package com.wicks.triangulation;
 
-import com.wicks.pointtools.PolygonEdge;
 import com.wicks.pointtools.PolygonVertex;
 
 /**
  * Created by wickstopher on 11/20/16.
  */
-public class SweepLineEvent
+public abstract class SweepLineEvent
 {
-    public enum EventType {
-        SPLIT,
-        MERGE,
-        START,
-        END,
-        UPPER,
-        LOWER
-    }
+    private final PolygonVertex vertex;
 
-    private PolygonVertex vertex;
-    public final EventType eventType;
-
-    public SweepLineEvent(PolygonVertex v)
+    protected SweepLineEvent(PolygonVertex v)
     {
         vertex = v;
-        eventType = determineEventType(v);
     }
 
     public PolygonVertex getVertex()
@@ -31,24 +19,77 @@ public class SweepLineEvent
         return vertex;
     }
 
-    private EventType determineEventType(PolygonVertex v)
+    public static SweepLineEvent createEvent(PolygonVertex v)
     {
-        PolygonEdge e1 = v.getPreviousEdge();
-        PolygonEdge e2 = v.getNextEdge();
-        EventType eventType;
-
-        // Split or Start
-        if (v == e1.getLeftEndpoint() && v == e2.getLeftEndpoint()) {
-            double angle = v.getAngle(e1.getRightEndpoint(), e2.getRightEndpoint());
-            eventType = angle < 180 ? EventType.SPLIT : EventType.START;
-        // Merge or End
-        } else if (v == e1.getRightEndpoint() && v == e2.getRightEndpoint()) {
-            double angle = v.getAngle(e1.getLeftEndpoint(), e2.getLeftEndpoint());
-            eventType = angle < 180 ? EventType.END : EventType.MERGE;
-        // Upper or Lower
-        } else {
-            eventType = v == e1.getRightEndpoint() ? EventType.LOWER : EventType.UPPER;
+        switch(v.getVertexType()) {
+            case Split:
+                return new SplitEvent(v);
+            case Merge:
+                return new MergeEvent(v);
+            case Start:
+                return new StartEvent(v);
+            case End:
+                return new EndEvent(v);
+            case Upper:
+                return new UpperEvent(v);
+            case Lower:
+                return new LowerEvent(v);
+            default:
+                throw new RuntimeException("This should never happen");
         }
-        return eventType;
+    }
+
+    public String toString()
+    {
+        return this.getClass() + ": " + vertex.toString();
+    }
+}
+
+class SplitEvent extends SweepLineEvent
+{
+    public SplitEvent(PolygonVertex v)
+    {
+        super(v);
+    }
+}
+
+class MergeEvent extends SweepLineEvent
+{
+    public MergeEvent(PolygonVertex v)
+    {
+        super(v);
+    }
+}
+
+class StartEvent extends SweepLineEvent
+{
+    public StartEvent(PolygonVertex v)
+    {
+        super(v);
+    }
+}
+
+class EndEvent extends SweepLineEvent
+{
+    public EndEvent(PolygonVertex v)
+    {
+        super(v);
+    }
+}
+
+class UpperEvent extends SweepLineEvent
+{
+    public UpperEvent(PolygonVertex v)
+    {
+        super(v);
+    }
+}
+
+
+class LowerEvent extends SweepLineEvent
+{
+    public LowerEvent(PolygonVertex v)
+    {
+        super(v);
     }
 }

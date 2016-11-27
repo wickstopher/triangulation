@@ -18,6 +18,7 @@ public class Polygon
     {
         initializeVertices(points);
         initializeEdges();
+        determineVertexTypes();
     }
 
     public List<Line> getEdges()
@@ -52,5 +53,43 @@ public class Polygon
             vertices.get(i).setNext(vertices.get(i + 1));
         }
         vertices.get(vertices.size() - 1).setNext(vertices.get(0));
+    }
+
+    private void determineVertexTypes()
+    {
+        PolygonVertex leftmost = Collections.min(vertices);
+        leftmost.setVertexType(PolygonVertex.VertexType.Start);
+        PolygonVertex current = leftmost.getNext();
+        boolean onLower = true;
+
+        while (current != leftmost) {
+            PolygonEdge previousEdge = current.getPreviousEdge();
+            PolygonEdge nextEdge = current.getNextEdge();
+            PolygonVertex.VertexType vertexType;
+
+            if (current == previousEdge.getLeftEndpoint() && current == nextEdge.getLeftEndpoint()) {
+                if (onLower) {
+                    vertexType = PolygonVertex.VertexType.Start;
+                } else {
+                    vertexType = PolygonVertex.VertexType.Split;
+                }
+            } else if (current == previousEdge.getRightEndpoint() && current == nextEdge.getRightEndpoint()) {
+                if (onLower) {
+                    vertexType = PolygonVertex.VertexType.Merge;
+                } else {
+                    vertexType = PolygonVertex.VertexType.End;
+                }
+            } else if (current == previousEdge.getLeftEndpoint() && current == nextEdge.getRightEndpoint()) {
+                onLower = true;
+                vertexType = PolygonVertex.VertexType.Lower;
+            } else if (current == previousEdge.getRightEndpoint() && current == nextEdge.getLeftEndpoint()) {
+                onLower = false;
+                vertexType = PolygonVertex.VertexType.Upper;
+            } else {
+                throw new RuntimeException("This should never happen.");
+            }
+            current.setVertexType(vertexType);
+            current = current.getNext();
+        }
     }
 }

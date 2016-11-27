@@ -5,10 +5,15 @@ package com.wicks.pointtools;
  */
 public class PolygonVertex extends Point
 {
+    public enum VertexType {
+        Split, Merge, Start, End, Upper, Lower
+    }
+
     private PolygonVertex previous;
     private PolygonVertex next;
     private PolygonEdge previousEdge;
     private PolygonEdge nextEdge;
+    private VertexType vertexType;
 
     public PolygonVertex(double x, double y, PolygonVertex previous, PolygonVertex next)
     {
@@ -50,6 +55,11 @@ public class PolygonVertex extends Point
         previousEdge = previous;
     }
 
+    protected void setVertexType(VertexType type)
+    {
+        vertexType = type;
+    }
+
     public PolygonEdge getNextEdge()
     {
         return nextEdge;
@@ -58,5 +68,10 @@ public class PolygonVertex extends Point
     public PolygonEdge getPreviousEdge()
     {
         return previousEdge;
+    }
+
+    public VertexType getVertexType()
+    {
+        return vertexType;
     }
 }

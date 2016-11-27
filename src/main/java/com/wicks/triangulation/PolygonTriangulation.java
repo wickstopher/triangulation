@@ -50,10 +50,7 @@ public class PolygonTriangulation extends PApplet
             if (mouseY < 650) {
                 points.add(new Point(mouseX, mouseY));
             } else if (mouseX < (750 / 2)) {
-                try {
-                    startTriangulationVisualization();
-                } catch (Exception e) {
-                }
+                startTriangulationVisualization();
             } else {
                 reset();
             }
@@ -109,6 +106,9 @@ public class PolygonTriangulation extends PApplet
                 triangulationVisualize = false;
             }
             visualizationPaused = true;
+        }
+        for (Point p : points) {
+            text("x: " + p.x + "y: " + p.y, (float) p.x, (float) p.y);
         }
     }
 
