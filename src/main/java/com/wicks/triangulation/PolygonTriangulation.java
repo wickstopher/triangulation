@@ -18,6 +18,7 @@ public class PolygonTriangulation extends PApplet
     private MonotonePolygonTriangulation triangulation;
     private MonotonePolygonSubdivision subdivision;
     private HullVisualizationState hullState;
+    private List<Polygon> polygons;
     private PolygonDrawState polygonDrawState;
 
     private boolean hullVisualize;
@@ -61,6 +62,7 @@ public class PolygonTriangulation extends PApplet
 
     public void draw()
     {
+
         if (!hullVisualize && !polygonVisualize && !triangulationVisualize) {
             defaults();
             fill(123);
@@ -89,6 +91,7 @@ public class PolygonTriangulation extends PApplet
                 while (subdivision.hasNextEvent()) {
                     subdivision.processNextEvent();
                 }
+                polygons = subdivision.getPolygonSubdivison().getPolygons();
                 triangulation = new MonotonePolygonTriangulation(polygonDrawState.getVertices());
                 triangulationVisualize = true;
             }
@@ -107,7 +110,6 @@ public class PolygonTriangulation extends PApplet
                 triangulation.getDiagonals().forEach(line -> drawLine(line));
                 drawSweepline(triangulation.getXPosition());
             } else {
-                System.out.printf("Total number of diagonals: %d\n", triangulation.getDiagonals().size());
                 triangulationVisualize = false;
             }
             visualizationPaused = true;

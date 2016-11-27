@@ -37,4 +37,9 @@ public class PolygonSubdivision
         polygons.remove(polygon);
         polygons.addAll(polygon.split(a, b));
     }
+
+    public List<Polygon> getPolygons()
+    {
+        return new ArrayList<>(polygons);
+    }
 }
