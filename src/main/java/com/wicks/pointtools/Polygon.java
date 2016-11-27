@@ -38,6 +38,31 @@ public class Polygon
         return new ArrayList<>(vertices);
     }
 
+    public List<Polygon> split(PolygonVertex a, PolygonVertex b)
+    {
+        List<Polygon> newPolygons = new ArrayList<>(2);
+        List<Point> aPoints = new ArrayList<>();
+        List<Point> bPoints = new ArrayList<>();
+        PolygonVertex current = a;
+
+        while (current != b) {
+            aPoints.add(current);
+            current = current.getNext();
+        }
+        aPoints.add(current);
+
+        while (current != a) {
+            bPoints.add(current);
+            current = current.getNext();
+        }
+        bPoints.add(current);
+
+        newPolygons.add(new Polygon(aPoints));
+        newPolygons.add(new Polygon(bPoints));
+
+        return newPolygons;
+    }
+
     private void initializeEdges()
     {
         edges = new ArrayList<>();

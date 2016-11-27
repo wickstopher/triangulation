@@ -1,9 +1,6 @@
 package com.wicks.triangulation;
 
-import com.wicks.pointtools.Line;
-import com.wicks.pointtools.Polygon;
-import com.wicks.pointtools.PolygonEdge;
-import com.wicks.pointtools.PolygonVertex;
+import com.wicks.pointtools.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.TreeMap;
 public class MonotonePolygonSubdivision
 {
     private Polygon polygon;
+    private PolygonSubdivision polygonSubdivision;
     private TreeMap<Double, PolygonEdge> sweepLineStatus;
     private List<Line> newDiagonals;
     private List<SweepLineEvent> events;
@@ -71,6 +69,18 @@ public class MonotonePolygonSubdivision
             insertStatusEdge(v.getPreviousEdge(), v.y);
             v.getPreviousEdge().helper = v;
         }
+    }
+
+    public PolygonSubdivision getPolygonSubdivison()
+    {
+        if (polygonSubdivision == null) {
+            while (hasNextEvent()) {
+                processNextEvent();
+            }
+            polygonSubdivision = new PolygonSubdivision(polygon);
+            newDiagonals.forEach(diagonal -> polygonSubdivision.addDiagonal(diagonal));
+        }
+        return polygonSubdivision;
     }
 
     private void insertVertexEdges(PolygonVertex v)
