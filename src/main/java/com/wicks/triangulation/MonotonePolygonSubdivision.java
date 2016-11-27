@@ -44,7 +44,7 @@ public class MonotonePolygonSubdivision
             PolygonEdge e = getEdgeAbove(v);
             newDiagonals.add(new Line(v, e.helper));
             insertVertexEdges(v);
-            v.getUpperEdge().helper = v;
+            v.getLowerEdge().helper = v;
             e.helper = v;
         } else if (event instanceof MergeEvent) {
             sweepLineStatus.remove(v.getNextEdge().statusKey);
@@ -61,12 +61,12 @@ public class MonotonePolygonSubdivision
         } else if (event instanceof UpperEvent) {
             fixUp(v, v.getPreviousEdge());
             sweepLineStatus.remove(v.getPreviousEdge().statusKey);
-            insertStatusEdge(v.getNextEdge(), v.x);
+            insertStatusEdge(v.getNextEdge(), v.y);
             v.getNextEdge().helper = v;
         } else if (event instanceof LowerEvent) {
             fixUp(v, v.getNextEdge());
             sweepLineStatus.remove(v.getNextEdge().statusKey);
-            insertStatusEdge(v.getPreviousEdge(), v.x);
+            insertStatusEdge(v.getPreviousEdge(), v.y);
             v.getPreviousEdge().helper = v;
         }
     }
@@ -80,8 +80,8 @@ public class MonotonePolygonSubdivision
             throw new RuntimeException("Upper edge equals lower, this should never happen.");
         }
 
-        insertStatusEdge(v.getLowerEdge(), v.x);
-        insertStatusEdge(v.getUpperEdge(), v.x + 0.0000001);
+        insertStatusEdge(lower, v.y);
+        insertStatusEdge(upper, v.y + 0.0000001);
     }
 
     private PolygonEdge getEdgeAbove(PolygonVertex v)
@@ -101,23 +101,49 @@ public class MonotonePolygonSubdivision
         }
     }
 
-    private void insertStatusEdge(PolygonEdge edge, double xPosition)
+    private void insertStatusEdge(PolygonEdge edge, double yPosition)
     {
-        edge.statusKey = edge.yPosition(xPosition);
+        edge.statusKey = yPosition;
         sweepLineStatus.put(edge.statusKey, edge);
     }
 
     private void reorderSweepLine(double xPosition)
     {
         TreeMap<Double, PolygonEdge> newStatus = new TreeMap<>();
+        TreeMap<Double, PolygonEdge> oldStatus = sweepLineStatus;
+        sweepLineStatus = newStatus;
+        PolygonEdge e1 = null;
+        PolygonEdge e2 = null;
 
-        if (sweepLineStatus != null) {
-            for (PolygonEdge e : sweepLineStatus.values()) {
-                e.statusKey = e.yPosition(xPosition);
-                newStatus.put(e.statusKey, e);
+        if (oldStatus != null) {
+            for (PolygonEdge e : oldStatus.values()) {
+                if (e.getLeftEndpoint().x == xPosition || e.getRightEndpoint().x == xPosition) {
+                    if (e1 == null) {
+                        e1 = e;
+                    } else if (e2 == null) {
+                        e2 = e;
+                    } else {
+                        throw new RuntimeException("More than 2 endpoints match?!");
+                    }
+                } else {
+                    insertStatusEdge(e, e.yPosition(xPosition));
+                }
             }
         }
-        sweepLineStatus = newStatus;
+        if (e1 != null) {
+            PolygonVertex v = e1.getLeftEndpoint().x == xPosition ? e1.getLeftEndpoint() : e1.getRightEndpoint();
+            if (v.getNextEdge() != e1 && v.getPreviousEdge() != e1) {
+                throw new RuntimeException("Bad edges; e1 doesn't match");
+            }
+            if (v.getNextEdge() != e2 && v.getPreviousEdge() != e2) {
+                throw new RuntimeException("Bad edges; e2 doesn't match");
+            }
+            if (e1 == e2) {
+                throw new RuntimeException("Bad edges; e1 == e2");
+            }
+            insertStatusEdge(v.getLowerEdge(), v.y);
+            insertStatusEdge(v.getUpperEdge(), v.y + 0.000001);
+        }
     }
 
     public List<Line> getNewDiagonals()
