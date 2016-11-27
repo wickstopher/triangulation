@@ -3,6 +3,7 @@ package com.wicks.triangulation;
 import com.wicks.pointtools.Line;
 import com.wicks.pointtools.Point;
 import com.wicks.pointtools.Polygon;
+import com.wicks.pointtools.PolygonEdge;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -84,6 +85,13 @@ public class PolygonTriangulation extends PApplet
 
                 polygonVisualize = false;
                 subdivision = new MonotonePolygonSubdivision(polygonDrawState.polygon);
+                try {
+                    while (subdivision.hasNextEvent()) {
+                        subdivision.processNextEvent();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
                 triangulation = new MonotonePolygonTriangulation(polygonDrawState.getVertices());
                 triangulationVisualize = true;
             }
@@ -109,6 +117,11 @@ public class PolygonTriangulation extends PApplet
         }
         for (Point p : points) {
             text("x: " + p.x + "y: " + p.y, (float) p.x, (float) p.y);
+        }
+        if (subdivision != null) {
+            for (Line e : subdivision.getNewDiagonals()) {
+                drawLine(e);
+            }
         }
     }
 

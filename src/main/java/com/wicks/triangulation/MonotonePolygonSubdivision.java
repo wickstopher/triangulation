@@ -38,12 +38,12 @@ public class MonotonePolygonSubdivision
     {
         SweepLineEvent event = events.get(nextIndex++);
         PolygonVertex v = event.getVertex();
+        reorderSweepLine(v.x);
 
         if (event instanceof SplitEvent) {
             PolygonEdge e = getEdgeAbove(v);
             newDiagonals.add(new Line(v, e.helper));
-            insertStatusEdge(v.getPreviousEdge(), v.x);
-            insertStatusEdge(v.getNextEdge(), v.x);
+            insertVertexEdges(v);
             v.getUpperEdge().helper = v;
             e.helper = v;
         } else if (event instanceof MergeEvent) {
@@ -52,8 +52,7 @@ public class MonotonePolygonSubdivision
             fixUp(v, getEdgeAbove(v));
             fixUp(v, v.getLowerEdge());
         } else if (event instanceof StartEvent) {
-            insertStatusEdge(v.getNextEdge(), v.x);
-            insertStatusEdge(v.getPreviousEdge(), v.x);
+            insertVertexEdges(v);
             v.getUpperEdge().helper = v;
         } else if (event instanceof EndEvent) {
             fixUp(v, v.getUpperEdge());
@@ -72,6 +71,19 @@ public class MonotonePolygonSubdivision
         }
     }
 
+    private void insertVertexEdges(PolygonVertex v)
+    {
+        PolygonEdge upper = v.getUpperEdge();
+        PolygonEdge lower = v.getLowerEdge();
+
+        if (upper == lower) {
+            throw new RuntimeException("Upper edge equals lower, this should never happen.");
+        }
+
+        insertStatusEdge(v.getLowerEdge(), v.x);
+        insertStatusEdge(v.getUpperEdge(), v.x + 0.0000001);
+    }
+
     private PolygonEdge getEdgeAbove(PolygonVertex v)
     {
        for (PolygonEdge e : sweepLineStatus.values()) {
@@ -84,12 +96,18 @@ public class MonotonePolygonSubdivision
 
     private void fixUp(PolygonVertex v, PolygonEdge e)
     {
-        if (e.helper.getVertexType() == PolygonVertex.VertexType.Merge) {
+        if (e.helper != null && e.helper.getVertexType() == PolygonVertex.VertexType.Merge) {
             newDiagonals.add(new Line(v, e.helper));
         }
     }
 
     private void insertStatusEdge(PolygonEdge edge, double xPosition)
+    {
+        edge.statusKey = edge.yPosition(xPosition);
+        sweepLineStatus.put(edge.statusKey, edge);
+    }
+
+    private void reorderSweepLine(double xPosition)
     {
         TreeMap<Double, PolygonEdge> newStatus = new TreeMap<>();
 
@@ -99,8 +117,11 @@ public class MonotonePolygonSubdivision
                 newStatus.put(e.statusKey, e);
             }
         }
-        edge.statusKey = edge.yPosition(xPosition);
-        newStatus.put(edge.statusKey, edge);
         sweepLineStatus = newStatus;
+    }
+
+    public List<Line> getNewDiagonals()
+    {
+        return new ArrayList<>(newDiagonals);
     }
 }
