@@ -70,6 +70,33 @@ public class PolygonVertex extends Point
         return previousEdge;
     }
 
+    public PolygonEdge getUpperEdge()
+    {
+        return getEdge(true);
+    }
+
+    public PolygonEdge getLowerEdge()
+    {
+        return getEdge(false);
+    }
+
+    private PolygonEdge getEdge(boolean upper)
+    {
+        PolygonVertex a = nextEdge.getLeftEndpoint() == this ?
+                nextEdge.getRightEndpoint() : nextEdge.getLeftEndpoint();
+        PolygonVertex b = previousEdge.getLeftEndpoint() == this ?
+                previousEdge.getRightEndpoint() : nextEdge.getLeftEndpoint();
+
+        if (a == this || b == this) {
+            throw new RuntimeException("That's bad");
+        }
+        if (upper) {
+            return a.y > b.y ? nextEdge : previousEdge;
+        } else {
+            return a.y > b.y ? previousEdge : nextEdge;
+        }
+    }
+
     public VertexType getVertexType()
     {
         return vertexType;

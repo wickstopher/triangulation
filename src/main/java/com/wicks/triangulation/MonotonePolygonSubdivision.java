@@ -37,19 +37,56 @@ public class MonotonePolygonSubdivision
     public void processNextEvent()
     {
         SweepLineEvent event = events.get(nextIndex++);
+        PolygonVertex v = event.getVertex();
+
+        if (event instanceof SplitEvent) {
+            PolygonEdge e = getEdgeAbove(v);
+            newDiagonals.add(new Line(v, e.helper));
+            insertStatusEdge(v.getPreviousEdge(), v.x);
+            insertStatusEdge(v.getNextEdge(), v.x);
+            v.getUpperEdge().helper = v;
+            e.helper = v;
+        } else if (event instanceof MergeEvent) {
+            sweepLineStatus.remove(v.getNextEdge().statusKey);
+            sweepLineStatus.remove(v.getPreviousEdge().statusKey);
+            fixUp(v, getEdgeAbove(v));
+            fixUp(v, v.getLowerEdge());
+        } else if (event instanceof StartEvent) {
+            insertStatusEdge(v.getNextEdge(), v.x);
+            insertStatusEdge(v.getPreviousEdge(), v.x);
+            v.getUpperEdge().helper = v;
+        } else if (event instanceof EndEvent) {
+            fixUp(v, v.getUpperEdge());
+            sweepLineStatus.remove(v.getNextEdge().statusKey);
+            sweepLineStatus.remove(v.getPreviousEdge().statusKey);
+        } else if (event instanceof UpperEvent) {
+            fixUp(v, v.getPreviousEdge());
+            sweepLineStatus.remove(v.getPreviousEdge().statusKey);
+            insertStatusEdge(v.getNextEdge(), v.x);
+            v.getNextEdge().helper = v;
+        } else if (event instanceof LowerEvent) {
+            fixUp(v, v.getNextEdge());
+            sweepLineStatus.remove(v.getNextEdge().statusKey);
+            insertStatusEdge(v.getPreviousEdge(), v.x);
+            v.getPreviousEdge().helper = v;
+        }
+    }
+
+    private PolygonEdge getEdgeAbove(PolygonVertex v)
+    {
+       for (PolygonEdge e : sweepLineStatus.values()) {
+           if (e.statusKey > v.y) {
+               return e;
+           }
+       }
+       throw new RuntimeException("No Edge found above!");
     }
 
     private void fixUp(PolygonVertex v, PolygonEdge e)
     {
-        if (isMergeVertex(e.helper)) {
+        if (e.helper.getVertexType() == PolygonVertex.VertexType.Merge) {
             newDiagonals.add(new Line(v, e.helper));
         }
-    }
-
-    private boolean isMergeVertex(PolygonVertex v)
-    {
-        // TODO: LOGIC
-        return false;
     }
 
     private void insertStatusEdge(PolygonEdge edge, double xPosition)
