@@ -37,6 +37,7 @@ public class PolygonTriangulation extends PApplet
     private void reset()
     {
         points = new ArrayList<>();
+        subdivision = null;
         defaults();
     }
 
@@ -85,12 +86,8 @@ public class PolygonTriangulation extends PApplet
 
                 polygonVisualize = false;
                 subdivision = new MonotonePolygonSubdivision(polygonDrawState.polygon);
-                try {
-                    while (subdivision.hasNextEvent()) {
-                        subdivision.processNextEvent();
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                while (subdivision.hasNextEvent()) {
+                    subdivision.processNextEvent();
                 }
                 triangulation = new MonotonePolygonTriangulation(polygonDrawState.getVertices());
                 triangulationVisualize = true;

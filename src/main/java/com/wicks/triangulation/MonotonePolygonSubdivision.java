@@ -49,8 +49,10 @@ public class MonotonePolygonSubdivision
         } else if (event instanceof MergeEvent) {
             sweepLineStatus.remove(v.getNextEdge().statusKey);
             sweepLineStatus.remove(v.getPreviousEdge().statusKey);
-            fixUp(v, getEdgeAbove(v));
+            PolygonEdge above = getEdgeAbove(v);
+            fixUp(v, above);
             fixUp(v, v.getLowerEdge());
+            above.helper = v;
         } else if (event instanceof StartEvent) {
             insertVertexEdges(v);
             v.getUpperEdge().helper = v;
@@ -131,18 +133,13 @@ public class MonotonePolygonSubdivision
             }
         }
         if (e1 != null) {
-            PolygonVertex v = e1.getLeftEndpoint().x == xPosition ? e1.getLeftEndpoint() : e1.getRightEndpoint();
-            if (v.getNextEdge() != e1 && v.getPreviousEdge() != e1) {
-                throw new RuntimeException("Bad edges; e1 doesn't match");
+            if (e2 == null) {
+                insertStatusEdge(e1, e1.yPosition(xPosition));
+            } else {
+                PolygonVertex v = e1.getLeftEndpoint().x == xPosition ? e1.getLeftEndpoint() : e1.getRightEndpoint();
+                insertStatusEdge(v.getLowerEdge(), v.y);
+                insertStatusEdge(v.getUpperEdge(), v.y + 0.000001);
             }
-            if (v.getNextEdge() != e2 && v.getPreviousEdge() != e2) {
-                throw new RuntimeException("Bad edges; e2 doesn't match");
-            }
-            if (e1 == e2) {
-                throw new RuntimeException("Bad edges; e1 == e2");
-            }
-            insertStatusEdge(v.getLowerEdge(), v.y);
-            insertStatusEdge(v.getUpperEdge(), v.y + 0.000001);
         }
     }
 
