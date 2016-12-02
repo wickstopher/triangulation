@@ -57,35 +57,57 @@ public class PolygonTriangulation extends PApplet
         // "play button"
         strokeWeight(1);
         stroke(0);
-        fill(123, 200, 75);
+        if (onButton(playButtonX)) {
+            fill(123, 150, 75);
+        } else {
+            fill(123, 200, 75);
+        }
         triangle(playButtonX, iconCenterY + iconHalfHeight,
                  playButtonX, iconCenterY - iconHalfHeight,
                  playButtonX + iconWidth, iconCenterY);
 
         // "next button"
         strokeWeight(8);
-        stroke(100, 25, 120);
+        if (onButton(nextButtonX)) {
+            stroke(100, 25, 75);
+            fill(100, 25, 120);
+        } else {
+            stroke(100, 25, 120);
+            fill(100, 25, 120);
+        }
         line(nextButtonX, iconCenterY, nextButtonX + iconWidth, iconCenterY);
         float triangleWidth = iconWidth / 6;
         float triangleLeftX = nextButtonX + (iconWidth - 10);
         strokeWeight(0);
-        fill(100, 25, 120);
         triangle(triangleLeftX, iconCenterY + triangleWidth + 5,
                  triangleLeftX, iconCenterY - triangleWidth  - 5,
                  nextButtonX + triangleWidth + iconWidth, iconCenterY);
 
         // "mode button"
         textSize(25);
-        fill(99);
+        if (onButton(modeButtonX)) {
+            fill(50);
+        } else {
+            fill(99);
+        }
         textAlign(CENTER, CENTER);
         text(drawMode.toString().toLowerCase(), modeButtonX + (iconWidth / 2), iconCenterY);
 
         // "speed button"
+        if (onButton(speedButtonX)) {
+            fill(50);
+        } else {
+            fill(99);
+        }
         text(drawSpeed.toString().toLowerCase(), speedButtonX + (iconWidth / 2), iconCenterY);
 
         // " cancel button"
         textSize(65);
-        fill(200, 40, 40);
+        if (onButton(cancelButtonX)) {
+            fill(150, 40, 40);
+        } else {
+            fill(200, 40, 40);
+        }
         text("X", cancelButtonX + (iconWidth / 2), iconCenterY);
     }
 
