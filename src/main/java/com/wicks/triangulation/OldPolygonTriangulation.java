@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by wickstopher on 10/23/16.
  */
-public class PolygonTriangulation extends PApplet
+public class OldPolygonTriangulation extends PApplet
 {
     private ArrayList<Point> points;
     private MonotonePolygonTriangulation triangulation;
@@ -168,7 +168,7 @@ public class PolygonTriangulation extends PApplet
 
     public static void main(String[] args)
     {
-        PApplet.main("com.wicks.triangulation.PolygonTriangulation");
+        PApplet.main("com.wicks.triangulation.OldPolygonTriangulation");
     }
 }
 

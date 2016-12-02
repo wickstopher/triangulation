@@ -72,22 +72,33 @@ public class PolygonVertex extends Point
 
     public PolygonEdge getUpperEdge()
     {
-        PolygonVertex nextVertex = nextEdge.getLeftEndpoint() == this ?
-                nextEdge.getRightEndpoint() : nextEdge.getLeftEndpoint();
-        PolygonVertex previousVertex = previousEdge.getLeftEndpoint() == this ?
-                previousEdge.getRightEndpoint() : previousEdge.getLeftEndpoint();
-
-        return nextVertex.y >= previousVertex.y ? nextEdge : previousEdge;
+        double x = getYComparisonPoint(nextEdge, previousEdge);
+        return nextEdge.yPosition(x) >= previousEdge.yPosition(x) ? nextEdge : previousEdge;
     }
 
     public PolygonEdge getLowerEdge()
     {
-        PolygonVertex nextVertex = nextEdge.getLeftEndpoint() == this ?
-                nextEdge.getRightEndpoint() : nextEdge.getLeftEndpoint();
-        PolygonVertex previousVertex = previousEdge.getLeftEndpoint() == this ?
-                previousEdge.getRightEndpoint() : previousEdge.getLeftEndpoint();
+        return nextEdge == getUpperEdge() ? previousEdge : nextEdge;
+    }
 
-        return nextVertex.y < previousVertex.y ? nextEdge : previousEdge;
+    private double getYComparisonPoint(PolygonEdge a, PolygonEdge b) {
+        Point aEndpoint, bEndpoint;
+
+        if (this == a.getLeftEndpoint() && this == b.getLeftEndpoint()) {
+            aEndpoint = a.getRightEndpoint();
+            bEndpoint = b.getRightEndpoint();
+        } else if (this == a.getRightEndpoint() && this == b.getRightEndpoint()) {
+            aEndpoint = a.getLeftEndpoint();
+            bEndpoint = b.getLeftEndpoint();
+        } else {
+            aEndpoint = a.getRightEndpoint() == this ? a.getLeftEndpoint() : a.getRightEndpoint();
+            bEndpoint = b.getRightEndpoint() == this ? b.getLeftEndpoint() : b.getRightEndpoint();
+        }
+
+        if (aEndpoint.x < bEndpoint.x) {
+            return aEndpoint.x;
+        }
+        return bEndpoint.x;
     }
 
     public VertexType getVertexType()

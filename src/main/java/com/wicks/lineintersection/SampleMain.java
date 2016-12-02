@@ -52,7 +52,7 @@ public class SampleMain extends PApplet
 
     public static void main(String[] args)
     {
-        PApplet.main("com.wicks.lineintersection.PolygonTriangulation");
+        PApplet.main("com.wicks.lineintersection.OldPolygonTriangulation");
     }
 
     public void line(Line line)
