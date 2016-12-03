@@ -87,7 +87,8 @@ public class MonotonePolygonTriangulation
                 ReflexChainPoint prev = reflexChain.pop();
                 if (!reflexChain.isEmpty()) {
                     ReflexChainPoint twoPrev = reflexChain.peek();
-                    while (prev.getAngle(twoPrev, v) < 180) {
+                    boolean onUpper = vPrevPosition == ChainPosition.UPPER_CHAIN;
+                    while ((onUpper && prev.getAngle(twoPrev, v) < 180) || (!onUpper && prev.getAngle(twoPrev, v) > 180)) {
                         diagonals.add(new Line(v, prev));
                         prev = reflexChain.pop();
                         if (reflexChain.isEmpty()) break;
