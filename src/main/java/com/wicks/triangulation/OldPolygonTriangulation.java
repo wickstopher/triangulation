@@ -75,7 +75,7 @@ public class OldPolygonTriangulation extends PApplet
                 delay(50);
             } else {
                 hullVisualize = false;
-                triangulation = new MonotonePolygonTriangulation(hullState.getHull());
+                triangulation = new MonotonePolygonTriangulation(new Polygon(hullState.getHull()));
                 triangulationVisualize = true;
             }
         }
@@ -92,7 +92,7 @@ public class OldPolygonTriangulation extends PApplet
                     subdivision.processNextEvent();
                 }
                 polygons = subdivision.getPolygonSubdivison().getPolygons();
-                triangulation = new MonotonePolygonTriangulation(polygonDrawState.getVertices());
+                triangulation = new MonotonePolygonTriangulation(polygonDrawState.polygon);
                 triangulationVisualize = true;
             }
         }

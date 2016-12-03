@@ -74,79 +74,79 @@ public class PolygonTriangulation extends PApplet
 
     public void draw()
     {
-        background(190);
-        drawPanel();
-        points.forEach(p -> drawInputPoint(p));
-        polygons.forEach(polygon -> drawPolygon(polygon));
-        diagonals.forEach(line -> drawPolygonEdge(line));
-        drawSweepline();
-        drawEventPoint();
+        try {
+            background(190);
+            drawPanel();
+            points.forEach(p -> drawInputPoint(p));
+            polygons.forEach(polygon -> drawPolygon(polygon));
+            diagonals.forEach(line -> drawPolygonEdge(line));
+            drawSweepline();
+            drawEventPoint();
 
-        if (polygonDrawState != null) {
-            if (polygonDrawState.hasNext()) {
-                drawPolygonEdge(polygonDrawState.getNextLine());
-                polygonDrawState.getEdges().forEach(line -> drawPolygonEdge(line));
-            } else {
-                points = polygonDrawState.getVertices();
-                Polygon polygon = new Polygon(points);
-                polygons.add(polygon);
-                subdivision = new MonotonePolygonSubdivision(polygon);
-                polygonDrawState = null;
-            }
-            delay(50);
-        }
-
-        else if (hullState != null) {
-            if (hullState.hasNext()) {
-                drawPolygonEdge(hullState.getNextLine());
-                hullState.getEdges().forEach(line -> drawPolygonEdge(line));
-            } else {
-                points = hullState.getHull();
-                Polygon polygon = new Polygon(points);
-                polygons.add(polygon);
-                subdivision = new MonotonePolygonSubdivision(polygon);
-                hullState = null;
-            }
-            delay(50);
-        }
-
-        else if (subdivision != null) {
-            if (subdivision.hasNextEvent()) {
-                if (!waitingForInput) {
-                    waitForUserInputOrDelay();
-                    subdivision.processNextEvent();
-                    sweepLine = subdivision.getSweepline();
-                    eventPoint = subdivision.getCurrentVertex();
-                    diagonals.removeAll(subdivision.getNewDiagonals());
-                    diagonals.addAll(subdivision.getNewDiagonals());
+            if (polygonDrawState != null) {
+                if (polygonDrawState.hasNext()) {
+                    drawPolygonEdge(polygonDrawState.getNextLine());
+                    polygonDrawState.getEdges().forEach(line -> drawPolygonEdge(line));
+                } else {
+                    points = polygonDrawState.getVertices();
+                    Polygon polygon = new Polygon(points);
+                    polygons.add(polygon);
+                    subdivision = new MonotonePolygonSubdivision(polygon);
+                    polygonDrawState = null;
                 }
-            } else {
-                diagonals.removeAll(subdivision.getNewDiagonals());
-                polygons.addAll(subdivision.getPolygonSubdivison().getPolygons());
-                nextPolygonIndex = 1;
-                subdivision = null;
+                delay(50);
+            } else if (hullState != null) {
+                if (hullState.hasNext()) {
+                    drawPolygonEdge(hullState.getNextLine());
+                    hullState.getEdges().forEach(line -> drawPolygonEdge(line));
+                } else {
+                    points = hullState.getHull();
+                    Polygon polygon = new Polygon(points);
+                    polygons.add(polygon);
+                    subdivision = new MonotonePolygonSubdivision(polygon);
+                    hullState = null;
+                }
+                delay(50);
+            } else if (subdivision != null) {
+                if (subdivision.hasNextEvent()) {
+                    if (!waitingForInput) {
+                        waitForUserInputOrDelay();
+                        subdivision.processNextEvent();
+                        sweepLine = subdivision.getSweepline();
+                        eventPoint = subdivision.getCurrentVertex();
+                        diagonals.removeAll(subdivision.getNewDiagonals());
+                        diagonals.addAll(subdivision.getNewDiagonals());
+                    }
+                } else {
+                    diagonals.removeAll(subdivision.getNewDiagonals());
+                    polygons.addAll(subdivision.getPolygonSubdivison().getPolygons());
+                    nextPolygonIndex = 1;
+                    subdivision = null;
+                }
+            } else if (-1 < nextPolygonIndex && nextPolygonIndex < polygons.size() && triangulation == null) {
+                Polygon polygon = polygons.get(nextPolygonIndex++);
+                triangulation = new MonotonePolygonTriangulation(polygon);
+            } else if (triangulation != null) {
+                if (triangulation.hasNextStatus()) {
+                    if (!waitingForInput) {
+                        waitForUserInputOrDelay();
+                        triangulation.updateStatus();
+                        sweepLine = triangulation.getSweepline();
+                        eventPoint = triangulation.getEventPoint();
+                        diagonals.removeAll(triangulation.getDiagonals());
+                        diagonals.addAll(triangulation.getDiagonals());
+                    }
+                } else {
+                    triangulation = null;
+                }
             }
-        }
 
-        else if (-1 < nextPolygonIndex && nextPolygonIndex < polygons.size() && triangulation == null) {
-            Polygon polygon = polygons.get(nextPolygonIndex++);
-            triangulation = new MonotonePolygonTriangulation(new ArrayList<>(polygon.getVertices()));
+            if (debug) drawMousePosition();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println(e.getStackTrace());
+            reset();
         }
-
-        else if (triangulation != null) {
-            if (triangulation.hasNextStatus()) {
-                waitForUserInputOrDelay();
-                triangulation.updateStatus();
-                sweepLine = triangulation.getSweepline();
-                eventPoint = triangulation.getEventPoint();
-                diagonals.removeAll(triangulation.getDiagonals());
-                diagonals.addAll(triangulation.getDiagonals());
-            } else {
-                triangulation = null;
-            }
-        }
-
-        if (debug) drawMousePosition();
     }
 
     public void mousePressed()
@@ -309,7 +309,7 @@ public class PolygonTriangulation extends PApplet
             fill(123, 50, 50);
             strokeWeight(1);
             stroke(0);
-            drawPoint(eventPoint, 8);
+            drawPoint(eventPoint, 12);
         }
     }
 

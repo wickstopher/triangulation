@@ -3,6 +3,8 @@ package com.wicks.triangulation;
 import com.google.common.collect.TreeMultiset;
 import com.wicks.pointtools.Line;
 import com.wicks.pointtools.Point;
+import com.wicks.pointtools.Polygon;
+import com.wicks.pointtools.PolygonVertex;
 import com.wicks.triangulation.ReflexChainPoint.ChainPosition;
 
 import java.util.*;
@@ -19,24 +21,18 @@ public class MonotonePolygonTriangulation
     private ReflexChainPoint u;
     private ReflexChainPoint vPrev;
     private int nextIndex;
-    private double maxY, minY;
+    private Polygon polygon;
 
-    public MonotonePolygonTriangulation(List<Point> polygon)
+    public MonotonePolygonTriangulation(Polygon polygon)
     {
-        if (polygon.size() < 2) {
-            throw new IllegalStateException("Polygon size must be at least 2!");
-        }
-        points = translateInput(polygon);
+        this.polygon = polygon;
+        points = translateInput(polygon.getVertices());
         reflexChain = new Stack<>();
         diagonals = new ArrayList<>();
         u = points.get(0);
         vPrev = u;
         reflexChain.push(u);
         nextIndex = 0;
-
-
-        maxY = Collections.max(points.stream().map(p -> p.y).collect(Collectors.toList()));
-        minY = Collections.min(points.stream().map(p -> p.y).collect(Collectors.toList()));
     }
 
     public boolean hasNextStatus()
@@ -51,8 +47,13 @@ public class MonotonePolygonTriangulation
 
     public Line getSweepline()
     {
-        Point a = new Point(getXPosition(), maxY);
-        Point b = new Point(getXPosition(), minY);
+        double x = getXPosition();
+        List<Double> yPositions = polygon.getEdges().stream().
+                filter(edge -> edge.a.x <= x && x <= edge.b.x).
+                map(edge -> edge.yPosition(x)).collect(Collectors.toList());
+
+        Point a = new Point(x, Collections.max(yPositions));
+        Point b = new Point(x, Collections.min(yPositions));
         return new Line(a, b);
     }
 
@@ -112,30 +113,30 @@ public class MonotonePolygonTriangulation
 
     /**
      * Assumes that polygon is a list of points in counter-clockwise vertex order representing a monotone polygon.
-     * @param polygon
+     * @param vertices
      * @return
      */
-    private static ArrayList<ReflexChainPoint> translateInput(List<Point> polygon)
+    private static ArrayList<ReflexChainPoint> translateInput(List<PolygonVertex> vertices)
     {
-        int minIndex = polygon.indexOf(Collections.min(polygon));
-        int maxIndex = polygon.indexOf(Collections.max(polygon));
+        int minIndex = vertices.indexOf(Collections.min(vertices));
+        int maxIndex = vertices.indexOf(Collections.max(vertices));
         TreeMultiset<ReflexChainPoint> output = TreeMultiset.create();
 
         boolean onUpperChain = true;
 
-        output.add(new LeftEndpoint(polygon.get(minIndex), polygon.get(computePreviousIndex(minIndex, polygon.size())),
-                polygon.get(computeNextIndex(minIndex, polygon.size()))));
+        output.add(new LeftEndpoint(vertices.get(minIndex), vertices.get(computePreviousIndex(minIndex, vertices.size())),
+                vertices.get(computeNextIndex(minIndex, vertices.size()))));
 
         for (int i = minIndex + 1; i != minIndex; i++) {
-            if (i == polygon.size()) {
+            if (i == vertices.size()) {
                 i = 0;
                 if (minIndex == 0) break;
             }
 
-            Point previous = polygon.get(computePreviousIndex(i, polygon.size()));
-            Point next = polygon.get(computeNextIndex(i, polygon.size()));
+            Point previous = vertices.get(computePreviousIndex(i, vertices.size()));
+            Point next = vertices.get(computeNextIndex(i, vertices.size()));
 
-            Point point = polygon.get(i);
+            Point point = vertices.get(i);
 
             if (i == maxIndex) {
                 onUpperChain = false;
