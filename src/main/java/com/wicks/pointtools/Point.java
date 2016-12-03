@@ -109,14 +109,14 @@ public class Point implements Comparable
         return partialHull;
     }
 
-    private static ArrayList<Point> computeUpperHull(ArrayList<Point> points)
+    private static ArrayList<Point> computeUpperHull(List<Point> points)
     {
         ArrayList<Point> copy = new ArrayList<>(points);
         Collections.sort(copy);
         return computePartialHull(copy);
     }
 
-    private static ArrayList<Point> computeLowerHull(ArrayList<Point> points)
+    private static ArrayList<Point> computeLowerHull(List<Point> points)
     {
         ArrayList<Point> copy = new ArrayList<>(points);
         Collections.sort(copy);
@@ -124,7 +124,7 @@ public class Point implements Comparable
         return computePartialHull(copy);
     }
 
-    public static List<Point> grahamsScan(ArrayList<Point> points)
+    public static List<Point> grahamsScan(List<Point> points)
     {
         List<Point> upperHull = computeUpperHull(points);
         List<Point> lowerHull = computeLowerHull(points);

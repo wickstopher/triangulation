@@ -6,6 +6,7 @@ import com.wicks.pointtools.Point;
 import com.wicks.triangulation.ReflexChainPoint.ChainPosition;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by wickstopher on 10/22/16.
@@ -18,6 +19,7 @@ public class MonotonePolygonTriangulation
     private ReflexChainPoint u;
     private ReflexChainPoint vPrev;
     private int nextIndex;
+    private double maxY, minY;
 
     public MonotonePolygonTriangulation(List<Point> polygon)
     {
@@ -31,6 +33,10 @@ public class MonotonePolygonTriangulation
         vPrev = u;
         reflexChain.push(u);
         nextIndex = 0;
+
+
+        maxY = Collections.max(points.stream().map(p -> p.y).collect(Collectors.toList()));
+        minY = Collections.min(points.stream().map(p -> p.y).collect(Collectors.toList()));
     }
 
     public boolean hasNextStatus()
@@ -41,6 +47,13 @@ public class MonotonePolygonTriangulation
     public double getXPosition()
     {
         return vPrev.x;
+    }
+
+    public Line getSweepline()
+    {
+        Point a = new Point(getXPosition(), maxY);
+        Point b = new Point(getXPosition(), minY);
+        return new Line(a, b);
     }
 
     public List<Line> getDiagonals()
@@ -90,6 +103,11 @@ public class MonotonePolygonTriangulation
         // in either case, v is added to the reflex chain
         reflexChain.push(v);
         vPrev = v;
+    }
+
+    public ReflexChainPoint getEventPoint()
+    {
+        return vPrev;
     }
 
     /**

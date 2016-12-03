@@ -16,7 +16,9 @@ public class MonotonePolygonSubdivision
     private TreeMap<Double, PolygonEdge> sweepLineStatus;
     private List<Line> newDiagonals;
     private List<SweepLineEvent> events;
+    private PolygonVertex currentVertex;
     private int nextIndex;
+    private double xPosition;
 
     public MonotonePolygonSubdivision(Polygon polygon)
     {
@@ -36,6 +38,8 @@ public class MonotonePolygonSubdivision
     {
         SweepLineEvent event = events.get(nextIndex++);
         PolygonVertex v = event.getVertex();
+        currentVertex = v;
+        xPosition = v.x;
         reorderSweepLine(v.x);
 
         if (event instanceof SplitEvent) {
@@ -71,6 +75,11 @@ public class MonotonePolygonSubdivision
         }
     }
 
+    public PolygonVertex getCurrentVertex()
+    {
+        return currentVertex;
+    }
+
     public PolygonSubdivision getPolygonSubdivison()
     {
         if (polygonSubdivision == null) {
@@ -81,6 +90,18 @@ public class MonotonePolygonSubdivision
             newDiagonals.forEach(diagonal -> polygonSubdivision.addDiagonal(diagonal));
         }
         return polygonSubdivision;
+    }
+
+    public Line getSweepline()
+    {
+        if (!sweepLineStatus.isEmpty()) {
+            Point a = new Point(xPosition, sweepLineStatus.firstEntry().getValue().yPosition(xPosition));
+            Point b = new Point(xPosition, sweepLineStatus.lastEntry().getValue().yPosition(xPosition));
+            return new Line(a, b);
+        }
+        List<PolygonVertex> vertices = polygon.getSortedVertices();
+        Point p = vertices.get(vertices.size() - 1);
+        return new Line(p, p);
     }
 
     private void insertVertexEdges(PolygonVertex v)
