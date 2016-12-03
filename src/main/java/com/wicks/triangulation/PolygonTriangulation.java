@@ -1,5 +1,6 @@
 package com.wicks.triangulation;
 
+import com.wicks.pointtools.Line;
 import com.wicks.pointtools.Point;
 import processing.core.PApplet;
 
@@ -32,7 +33,8 @@ public class PolygonTriangulation extends PApplet
     // state variables
     private DrawMode drawMode;
     private DrawSpeed drawSpeed;
-    private List<Point> points;
+    private ArrayList<Point> points;
+    private HullVisualizationState hullState;
 
     public void settings()
     {
@@ -47,24 +49,50 @@ public class PolygonTriangulation extends PApplet
     private void reset()
     {
         points = new ArrayList<>();
+        hullState = null;
     }
 
     public void draw()
     {
         background(190);
         drawPanel();
+        points.forEach(p -> drawPoint(p));
+
+        if (hullState != null) {
+            if (hullState.hasNext()) {
+                drawPolygonEdge(hullState.getNextLine());
+                delay(50);
+            }
+            hullState.getEdges().forEach(line -> drawPolygonEdge(line));
+        }
 
         if (debug) drawMousePosition();
     }
 
     public void mousePressed()
     {
-        if (onButton(modeButtonX)) {
+        if (onButton(playButtonX)) {
+            switch(drawMode) {
+                case HULL:
+                    hullState = new HullVisualizationState(Point.grahamsScan(points));
+                    break;
+            }
+        }
+        else if (onButton(modeButtonX)) {
             cycleDrawMode();
         } else if (onButton(speedButtonX)) {
             cycleDrawSpeed();
         } else if (onButton(cancelButtonX)) {
             reset();
+        } else if (!onPanel()) {
+            switch(drawMode) {
+                case POINT:
+                case HULL:
+                    points.add(new Point(mouseX, mouseY));
+                    break;
+                case DRAW:
+                   break;
+            }
         }
     }
 
@@ -176,6 +204,28 @@ public class PolygonTriangulation extends PApplet
         int index = values.indexOf(drawSpeed) + 1;
         index = index == values.size() ? 0 : index;
         drawSpeed = values.get(index);
+    }
+
+    private void drawPoint(Point point)
+    {
+        float x = (float) point.x;
+        float y = (float) point.y;
+        fill(123);
+        strokeWeight(1);
+        stroke(0);
+        ellipse(x, y, 5, 5);
+    }
+
+    private void drawPolygonEdge(Line line)
+    {
+        float x1 = (float) line.a.x;
+        float y1 = (float)line.a.y;
+        float x2 = (float) line.b.x;
+        float y2 = (float) line.b.y;
+
+        strokeWeight(2);
+        stroke(0);
+        line(x1, y1, x2, y2);
     }
 
     private void drawMousePosition() {
