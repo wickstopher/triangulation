@@ -10,6 +10,7 @@ public class UpperChainPoint extends ReflexChainPoint
     public UpperChainPoint(Point point, Point previous, Point next)
     {
         super(point, previous, next);
+        isReflexVertex = point.getAngle(previous, next) > 180;
     }
 
     @Override

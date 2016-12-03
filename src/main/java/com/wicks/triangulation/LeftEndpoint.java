@@ -11,6 +11,7 @@ public class LeftEndpoint extends ReflexChainPoint
     public LeftEndpoint(Point point, Point previous, Point next)
     {
         super(point, previous, next);
+        isReflexVertex = false;
     }
 
     @Override
