@@ -1,7 +1,9 @@
 package com.wicks.triangulation;
 
+import com.wicks.pointtools.Point;
 import processing.core.PApplet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,10 +12,15 @@ import java.util.List;
  */
 public class PolygonTriangulation extends PApplet
 {
+    private boolean debug = false;
+
+    private int xDimension = 850;
+    private int yDimension = 850;
     private float iconCenterY = 775;
     private float iconHalfHeight = 35;
     private float iconWidth = 57;
     private float iconSpacing = 75;
+    private float panelTop = iconCenterY - iconHalfHeight - 20;
 
     // panel variables
     float playButtonX = 115;
@@ -25,14 +32,21 @@ public class PolygonTriangulation extends PApplet
     // state variables
     private DrawMode drawMode;
     private DrawSpeed drawSpeed;
+    private List<Point> points;
 
     public void settings()
     {
-        size(850, 850);
+        size(xDimension, yDimension);
 
         // initialize state
         drawMode = DrawMode.POINT;
         drawSpeed = DrawSpeed.NORMAL;
+        reset();
+    }
+
+    private void reset()
+    {
+        points = new ArrayList<>();
     }
 
     public void draw()
@@ -40,7 +54,7 @@ public class PolygonTriangulation extends PApplet
         background(190);
         drawPanel();
 
-        //drawMousePosition();
+        if (debug) drawMousePosition();
     }
 
     public void mousePressed()
@@ -49,11 +63,29 @@ public class PolygonTriangulation extends PApplet
             cycleDrawMode();
         } else if (onButton(speedButtonX)) {
             cycleDrawSpeed();
+        } else if (onButton(cancelButtonX)) {
+            reset();
+        }
+    }
+
+    public void keyPressed()
+    {
+        switch(key) {
+            case 'D':
+            case 'd':
+                debug = !debug;
+                break;
+            default:
+                break;
         }
     }
 
     private void drawPanel()
     {
+        strokeWeight(5);
+        stroke(87);
+        line(0, panelTop, xDimension, panelTop);
+
         // "play button"
         strokeWeight(1);
         stroke(0);
@@ -111,29 +143,18 @@ public class PolygonTriangulation extends PApplet
         text("X", cancelButtonX + (iconWidth / 2), iconCenterY);
     }
 
-    public void drawMousePosition() {
-        fill(123);
-        textSize(12);
-        textAlign(TOP, RIGHT);
-        String text;
-        if (onButton(playButtonX)) {
-            text = "on play button!";
-        } else if (onButton(nextButtonX)) {
-            text = "on next button!";
-        } else if (onButton(modeButtonX)) {
-            text = "on mode button!";
-        } else {
-            text = "( " + mouseX + ", " + mouseY + " )";
-        }
-        text(text, mouseX, mouseY - 5);
-    }
-
-    private boolean onButton(float buttonX) {
+    private boolean onButton(float buttonX)
+    {
         float xMax = buttonX + iconWidth;
         float yMin = iconCenterY - iconHalfHeight;
         float yMax = iconCenterY + iconHalfHeight;
 
         return pointerInRegion(buttonX, xMax, yMin, yMax);
+    }
+
+    private boolean onPanel()
+    {
+        return pointerInRegion(0, xDimension, panelTop, yDimension);
     }
 
     private boolean pointerInRegion(float xMin, float xMax, float yMin, float yMax)
@@ -155,6 +176,29 @@ public class PolygonTriangulation extends PApplet
         int index = values.indexOf(drawSpeed) + 1;
         index = index == values.size() ? 0 : index;
         drawSpeed = values.get(index);
+    }
+
+    private void drawMousePosition() {
+        fill(123);
+        textSize(12);
+        textAlign(TOP, RIGHT);
+        String text;
+        if (onButton(playButtonX)) {
+            text = "on play button!";
+        } else if (onButton(nextButtonX)) {
+            text = "on next button!";
+        } else if (onButton(modeButtonX)) {
+            text = "on mode button!";
+        } else if (onButton(speedButtonX)) {
+            text = "on speed button!";
+        } else if (onButton(cancelButtonX)) {
+            text = "on cancel button!";
+        } else if (onPanel()) {
+            text = "on panel but not on button!";
+        } else {
+            text = "( " + mouseX + ", " + mouseY + " )";
+        }
+        text(text, mouseX, mouseY - 5);
     }
 
     public static void main(String[] args)
