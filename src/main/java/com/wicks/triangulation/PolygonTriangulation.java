@@ -114,11 +114,11 @@ public class PolygonTriangulation extends PApplet
                         subdivision.processNextEvent();
                         sweepLine = subdivision.getSweepline();
                         eventPoint = subdivision.getCurrentVertex();
-                        diagonals.removeAll(subdivision.getNewDiagonals());
+                        //diagonals.removeAll(subdivision.getNewDiagonals());
                         diagonals.addAll(subdivision.getNewDiagonals());
                     }
                 } else {
-                    diagonals.removeAll(subdivision.getNewDiagonals());
+                    //diagonals.removeAll(subdivision.getNewDiagonals());
                     polygons.addAll(subdivision.getPolygonSubdivison().getPolygons());
                     nextPolygonIndex = 1;
                     subdivision = null;
@@ -133,7 +133,7 @@ public class PolygonTriangulation extends PApplet
                         triangulation.updateStatus();
                         sweepLine = triangulation.getSweepline();
                         eventPoint = triangulation.getEventPoint();
-                        diagonals.removeAll(triangulation.getDiagonals());
+                        //diagonals.removeAll(triangulation.getDiagonals());
                         diagonals.addAll(triangulation.getDiagonals());
                     }
                 } else {
@@ -141,7 +141,14 @@ public class PolygonTriangulation extends PApplet
                 }
             }
 
-            if (debug) drawMousePosition();
+            if (debug) {
+                drawMousePosition();
+                points.forEach(p -> {
+                    textSize(12);
+                    textAlign(TOP, RIGHT);
+                    text("  ( " + p.x + ", " + p.y + " )", (float) p.x, (float) p.y);
+                });
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println(e.getStackTrace());
