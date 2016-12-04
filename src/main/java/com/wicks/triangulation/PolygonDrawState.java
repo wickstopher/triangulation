@@ -15,6 +15,7 @@ public class PolygonDrawState
     Polygon polygon;
     List<Point> vertices;
     List<Line> edges;
+    List<Line> processedEdges;
     private int nextIndex;
 
     public PolygonDrawState(List<Point> vertices)
@@ -22,6 +23,7 @@ public class PolygonDrawState
         this.vertices = vertices;
         polygon = new Polygon(vertices);
         edges = polygon.getEdges();
+        processedEdges = new ArrayList<>(edges.size());
         nextIndex = 0;
     }
 
@@ -42,6 +44,12 @@ public class PolygonDrawState
 
     public Line getNextLine()
     {
+        processedEdges.add(edges.get(nextIndex));
         return edges.get(nextIndex++);
+    }
+
+    public List<Line> getProcessedEdges()
+    {
+        return new ArrayList<>(processedEdges);
     }
 }

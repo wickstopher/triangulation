@@ -67,6 +67,7 @@ public class PolygonTriangulation extends PApplet
     {
         playing = false;
         waitingForInput = false;
+        doReset = false;
         points = new ArrayList<>();
         polygons = new ArrayList<>();
         diagonals = new ArrayList<>();
@@ -76,7 +77,6 @@ public class PolygonTriangulation extends PApplet
         nextPolygonIndex = -1;
         sweepLine = null;
         eventPoint = null;
-        doReset = false;
     }
 
     public void draw()
@@ -93,7 +93,8 @@ public class PolygonTriangulation extends PApplet
             if (polygonDrawState != null) {
                 if (polygonDrawState.hasNext()) {
                     drawPolygonEdge(polygonDrawState.getNextLine());
-                    polygonDrawState.getEdges().forEach(line -> drawPolygonEdge(line));
+                    polygonDrawState.getProcessedEdges().forEach(line -> drawPolygonEdge(line));
+                    delay(50);
                 } else {
                     points = polygonDrawState.getVertices();
                     Polygon polygon = new Polygon(points);
@@ -101,11 +102,11 @@ public class PolygonTriangulation extends PApplet
                     subdivision = new MonotonePolygonSubdivision(polygon);
                     polygonDrawState = null;
                 }
-                delay(50);
             } else if (hullState != null) {
                 if (hullState.hasNext()) {
                     drawPolygonEdge(hullState.getNextLine());
                     hullState.getEdges().forEach(line -> drawPolygonEdge(line));
+                    delay(50);
                 } else {
                     points = hullState.getHull();
                     Polygon polygon = new Polygon(points);
@@ -113,7 +114,6 @@ public class PolygonTriangulation extends PApplet
                     subdivision = new MonotonePolygonSubdivision(polygon);
                     hullState = null;
                 }
-                delay(50);
             } else if (subdivision != null) {
                 if (subdivision.hasNextEvent()) {
                     if (!waitingForInput) {
@@ -121,11 +121,9 @@ public class PolygonTriangulation extends PApplet
                         subdivision.processNextEvent();
                         sweepLine = subdivision.getSweepline();
                         eventPoint = subdivision.getCurrentVertex();
-                        //diagonals.removeAll(subdivision.getNewDiagonals());
                         diagonals.addAll(subdivision.getNewDiagonals());
                     }
                 } else {
-                    //diagonals.removeAll(subdivision.getNewDiagonals());
                     polygons.addAll(subdivision.getPolygonSubdivison().getPolygons());
                     nextPolygonIndex = 1;
                     subdivision = null;
@@ -133,7 +131,14 @@ public class PolygonTriangulation extends PApplet
             } else if (-1 < nextPolygonIndex && nextPolygonIndex < polygons.size() && triangulation == null) {
                 Polygon polygon = polygons.get(nextPolygonIndex++);
                 triangulation = new MonotonePolygonTriangulation(polygon);
-            } else if (triangulation != null) {
+            } else if (nextPolygonIndex == polygons.size()) {
+                // final wait
+                waitForUserInputOrDelay();
+                sweepLine = null;
+                eventPoint = null;
+                nextPolygonIndex = -1;
+            }
+            else if (triangulation != null) {
                 if (triangulation.hasNextStatus()) {
                     if (!waitingForInput) {
                         waitForUserInputOrDelay();
@@ -144,11 +149,9 @@ public class PolygonTriangulation extends PApplet
                         diagonals.addAll(triangulation.getDiagonals());
                     }
                 } else {
+                    waitForUserInputOrDelay();
                     triangulation = null;
                 }
-            } else {
-                sweepLine = null;
-                eventPoint = null;
             }
 
             if (debug) {
