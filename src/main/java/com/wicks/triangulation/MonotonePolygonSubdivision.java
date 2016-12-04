@@ -97,6 +97,12 @@ public class MonotonePolygonSubdivision
         if (!sweepLineStatus.isEmpty()) {
             Point a = new Point(xPosition, sweepLineStatus.firstEntry().getValue().yPosition(xPosition));
             Point b = new Point(xPosition, sweepLineStatus.lastEntry().getValue().yPosition(xPosition));
+
+            if (a.y > currentVertex.y) {
+                a = currentVertex;
+            } else if (b.y < currentVertex.y) {
+                b = currentVertex;
+            }
             return new Line(a, b);
         }
         List<PolygonVertex> vertices = polygon.getSortedVertices();

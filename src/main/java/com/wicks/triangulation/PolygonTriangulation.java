@@ -110,7 +110,6 @@ public class PolygonTriangulation extends PApplet
             } else if (subdivision != null) {
                 if (subdivision.hasNextEvent()) {
                     if (!waitingForInput) {
-                        waitForUserInputOrDelay();
                         subdivision.processNextEvent();
                         sweepLine = subdivision.getSweepline();
                         eventPoint = subdivision.getCurrentVertex();
@@ -139,6 +138,9 @@ public class PolygonTriangulation extends PApplet
                 } else {
                     triangulation = null;
                 }
+            } else {
+                sweepLine = null;
+                eventPoint = null;
             }
 
             if (debug) {
@@ -158,37 +160,43 @@ public class PolygonTriangulation extends PApplet
 
     public void mousePressed()
     {
-        if (onButton(playButtonX)) {
-            playing = true;
-            polygons = new ArrayList<>();
-            diagonals = new ArrayList<>();
-            sweepLine = null;
-            eventPoint = null;
-            switch(drawMode) {
-                case POINT:
-                    polygonDrawState = new PolygonDrawState(points);
-                    break;
-                case HULL:
-                    hullState = new HullVisualizationState(Point.grahamsScan(points));
-                    break;
+        try {
+            if (onButton(playButtonX)) {
+                playing = true;
+                polygons = new ArrayList<>();
+                diagonals = new ArrayList<>();
+                sweepLine = null;
+                eventPoint = null;
+                switch (drawMode) {
+                    case POINT:
+                        polygonDrawState = new PolygonDrawState(points);
+                        break;
+                    case HULL:
+                        hullState = new HullVisualizationState(Point.grahamsScan(points));
+                        break;
+                }
+            } else if (onButton(nextButtonX)) {
+                waitingForInput = false;
+            } else if (onButton(modeButtonX)) {
+                cycleDrawMode();
+            } else if (onButton(speedButtonX)) {
+                cycleDrawSpeed();
+            } else if (onButton(cancelButtonX)) {
+                reset();
+            } else if (!onPanel() && !playing) {
+                switch (drawMode) {
+                    case POINT:
+                    case HULL:
+                        points.add(new Point(mouseX, mouseY));
+                        break;
+                    case DRAW:
+                        break;
+                }
             }
-        } else if (onButton(nextButtonX)) {
-            waitingForInput = false;
-        } else if (onButton(modeButtonX)) {
-            cycleDrawMode();
-        } else if (onButton(speedButtonX)) {
-            cycleDrawSpeed();
-        } else if (onButton(cancelButtonX)) {
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println(e.getStackTrace());
             reset();
-        } else if (!onPanel() && !playing) {
-            switch(drawMode) {
-                case POINT:
-                case HULL:
-                    points.add(new Point(mouseX, mouseY));
-                    break;
-                case DRAW:
-                   break;
-            }
         }
     }
 
