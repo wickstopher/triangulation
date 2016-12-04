@@ -117,6 +117,7 @@ public class PolygonTriangulation extends PApplet
             } else if (subdivision != null) {
                 if (subdivision.hasNextEvent()) {
                     if (!waitingForInput) {
+                        waitForUserInputOrDelay();
                         subdivision.processNextEvent();
                         sweepLine = subdivision.getSweepline();
                         eventPoint = subdivision.getCurrentVertex();
