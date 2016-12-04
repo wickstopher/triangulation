@@ -34,6 +34,7 @@ public class PolygonTriangulation extends PApplet
     // state variables
     private boolean playing;
     private boolean waitingForInput;
+    private boolean doReset;
     private int nextPolygonIndex;
     private DrawMode drawMode;
     private DrawSpeed drawSpeed;
@@ -57,6 +58,11 @@ public class PolygonTriangulation extends PApplet
         reset();
     }
 
+    private void requestReset()
+    {
+        doReset = true;
+    }
+
     private void reset()
     {
         playing = false;
@@ -70,6 +76,7 @@ public class PolygonTriangulation extends PApplet
         nextPolygonIndex = -1;
         sweepLine = null;
         eventPoint = null;
+        doReset = false;
     }
 
     public void draw()
@@ -154,6 +161,9 @@ public class PolygonTriangulation extends PApplet
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println(e.getStackTrace());
+            requestReset();
+        }
+        if (doReset) {
             reset();
         }
     }
@@ -182,7 +192,7 @@ public class PolygonTriangulation extends PApplet
             } else if (onButton(speedButtonX)) {
                 cycleDrawSpeed();
             } else if (onButton(cancelButtonX)) {
-                reset();
+                requestReset();
             } else if (!onPanel() && !playing) {
                 switch (drawMode) {
                     case POINT:
@@ -196,7 +206,7 @@ public class PolygonTriangulation extends PApplet
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println(e.getStackTrace());
-            reset();
+            requestReset();
         }
     }
 
