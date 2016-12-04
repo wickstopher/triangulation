@@ -142,8 +142,6 @@ public class PolygonTriangulation extends PApplet
             } else if (nextPolygonIndex == polygons.size()) {
                 // final wait
                 waitForUserInputOrDelay();
-                sweepLine = null;
-                eventPoint = null;
                 nextPolygonIndex = -1;
             }
             else if (triangulation != null) {
