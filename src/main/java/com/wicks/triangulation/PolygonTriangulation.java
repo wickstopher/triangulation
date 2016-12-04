@@ -35,6 +35,7 @@ public class PolygonTriangulation extends PApplet
     private boolean playing;
     private boolean waitingForInput;
     private boolean doReset;
+    private boolean firstEvent;
     private int nextPolygonIndex;
     private DrawMode drawMode;
     private DrawSpeed drawSpeed;
@@ -66,6 +67,7 @@ public class PolygonTriangulation extends PApplet
     private void reset()
     {
         playing = false;
+        firstEvent = false;
         waitingForInput = false;
         doReset = false;
         points = new ArrayList<>();
@@ -101,6 +103,7 @@ public class PolygonTriangulation extends PApplet
                     polygons.add(polygon);
                     subdivision = new MonotonePolygonSubdivision(polygon);
                     polygonDrawState = null;
+                    firstEvent = true;
                 }
             } else if (hullState != null) {
                 if (hullState.hasNext()) {
@@ -113,12 +116,17 @@ public class PolygonTriangulation extends PApplet
                     polygons.add(polygon);
                     subdivision = new MonotonePolygonSubdivision(polygon);
                     hullState = null;
+                    firstEvent = true;
                 }
             } else if (subdivision != null) {
                 if (subdivision.hasNextEvent()) {
                     if (!waitingForInput) {
-                        waitForUserInputOrDelay();
-                        subdivision.processNextEvent();
+                        if (firstEvent) {
+                            firstEvent = false;
+                        } else {
+                            waitForUserInputOrDelay();
+                            subdivision.processNextEvent();
+                        }
                         sweepLine = subdivision.getSweepline();
                         eventPoint = subdivision.getCurrentVertex();
                         diagonals.addAll(subdivision.getNewDiagonals());
@@ -141,8 +149,12 @@ public class PolygonTriangulation extends PApplet
             else if (triangulation != null) {
                 if (triangulation.hasNextStatus()) {
                     if (!waitingForInput) {
-                        waitForUserInputOrDelay();
-                        triangulation.updateStatus();
+                        if (firstEvent) {
+                            firstEvent = false;
+                        } else {
+                            waitForUserInputOrDelay();
+                            triangulation.updateStatus();
+                        }
                         sweepLine = triangulation.getSweepline();
                         eventPoint = triangulation.getEventPoint();
                         //diagonals.removeAll(triangulation.getDiagonals());

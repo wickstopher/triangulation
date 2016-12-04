@@ -27,6 +27,7 @@ public class MonotonePolygonSubdivision
         this.events = new ArrayList<>();
         polygon.getSortedVertices().forEach(v -> events.add(SweepLineEvent.createEvent(v)));
         this.nextIndex = 0;
+        sweepLineStatus = new TreeMap<>();
     }
 
     public boolean hasNextEvent()
