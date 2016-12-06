@@ -224,7 +224,7 @@ public class PolygonTriangulation extends PApplet
                     case POINT:
                         Point p = new Point(mouseX, mouseY);
                         if (previousPoint != null) {
-                            if (Math.abs(p.x - firstPoint.x) <= 5 && Math.abs(p.y - firstPoint.y) <= 5) {
+                            if (Math.abs(p.x - firstPoint.x) <= 15 && Math.abs(p.y - firstPoint.y) <= 15) {
                                 p = firstPoint;
                             }
                             diagonals.add(new Line(p, previousPoint));
