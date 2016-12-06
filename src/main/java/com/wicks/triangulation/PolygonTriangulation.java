@@ -48,6 +48,8 @@ public class PolygonTriangulation extends PApplet
     private HullVisualizationState hullState;
     private Line sweepLine;
     private Point eventPoint;
+    private Point firstPoint;
+    private Point previousPoint;
 
     public void settings()
     {
@@ -79,6 +81,8 @@ public class PolygonTriangulation extends PApplet
         nextPolygonIndex = -1;
         sweepLine = null;
         eventPoint = null;
+        firstPoint = null;
+        previousPoint = null;
     }
 
     public void draw()
@@ -91,6 +95,9 @@ public class PolygonTriangulation extends PApplet
             diagonals.forEach(line -> drawPolygonEdge(line));
             drawSweepline();
             drawEventPoint();
+            if (!playing && drawMode == DrawMode.POINT && previousPoint != null) {
+                drawPolygonEdge(new Line(previousPoint, new Point(mouseX, mouseY)));
+            }
 
             if (polygonDrawState != null) {
                 if (polygonDrawState.hasNext()) {
@@ -182,23 +189,28 @@ public class PolygonTriangulation extends PApplet
         }
     }
 
+    private void play()
+    {
+        playing = true;
+        polygons = new ArrayList<>();
+        diagonals = new ArrayList<>();
+        sweepLine = null;
+        eventPoint = null;
+        switch (drawMode) {
+            case POINT:
+                polygonDrawState = new PolygonDrawState(points);
+                break;
+            case HULL:
+                hullState = new HullVisualizationState(Point.grahamsScan(points));
+                break;
+        }
+    }
+
     public void mousePressed()
     {
         try {
             if (onButton(playButtonX)) {
-                playing = true;
-                polygons = new ArrayList<>();
-                diagonals = new ArrayList<>();
-                sweepLine = null;
-                eventPoint = null;
-                switch (drawMode) {
-                    case POINT:
-                        polygonDrawState = new PolygonDrawState(points);
-                        break;
-                    case HULL:
-                        hullState = new HullVisualizationState(Point.grahamsScan(points));
-                        break;
-                }
+                play();
             } else if (onButton(nextButtonX)) {
                 waitingForInput = false;
             } else if (onButton(modeButtonX)) {
@@ -210,8 +222,22 @@ public class PolygonTriangulation extends PApplet
             } else if (!onPanel() && !playing) {
                 switch (drawMode) {
                     case POINT:
+                        Point p = new Point(mouseX, mouseY);
+                        if (previousPoint != null) {
+                            if (Math.abs(p.x - firstPoint.x) <= 5 && Math.abs(p.y - firstPoint.y) <= 5) {
+                                p = firstPoint;
+                            }
+                            diagonals.add(new Line(p, previousPoint));
+                        } else {
+                            firstPoint = p;
+                        }
+                        previousPoint = p;
+                        if (p == firstPoint && points.size() > 1) {
+                            play();
+                            break;
+                        }
                     case HULL:
-                        points.add(new Point(mouseX, mouseY));
+                        points.add(previousPoint);
                         break;
                     case DRAW:
                         break;
