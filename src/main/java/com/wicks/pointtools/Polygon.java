@@ -1,7 +1,5 @@
 package com.wicks.pointtools;
 
-import com.seisw.util.geom.Poly;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
