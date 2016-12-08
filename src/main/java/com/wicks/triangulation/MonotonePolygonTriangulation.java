@@ -5,7 +5,7 @@ import com.wicks.pointtools.Line;
 import com.wicks.pointtools.Point;
 import com.wicks.pointtools.Polygon;
 import com.wicks.pointtools.PolygonVertex;
-import com.wicks.triangulation.ReflexChainPoint.ChainPosition;
+import com.wicks.triangulation.ReflexChainEvent.ChainPosition;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
  */
 public class MonotonePolygonTriangulation
 {
-    private List<ReflexChainPoint> points;
-    private Stack<ReflexChainPoint> reflexChain;
+    private List<ReflexChainEvent> points;
+    private Stack<ReflexChainEvent> reflexChain;
     private List<Line> diagonals;
-    private ReflexChainPoint u;
-    private ReflexChainPoint vPrev;
+    private ReflexChainEvent u;
+    private ReflexChainEvent vPrev;
     private int nextIndex;
     private Polygon polygon;
 
@@ -64,7 +64,7 @@ public class MonotonePolygonTriangulation
 
     public void updateStatus()
     {
-        ReflexChainPoint v = points.get(nextIndex++);
+        ReflexChainEvent v = points.get(nextIndex++);
 
         if (nextIndex == 1) {
             return;
@@ -75,7 +75,7 @@ public class MonotonePolygonTriangulation
 
         if (vPrevPosition != vPosition) {
             while (!reflexChain.isEmpty() && reflexChain.peek() != u) { // reference comparison should suffice here
-                ReflexChainPoint prev = reflexChain.pop();
+                ReflexChainEvent prev = reflexChain.pop();
                 if ((vPosition != ChainPosition.RIGHT_ENDPOINT && vPosition != ChainPosition.LEFT_ENDPOINT)
                         || prev != vPrev) {
                     diagonals.add(new Line(v, prev));
@@ -84,9 +84,9 @@ public class MonotonePolygonTriangulation
             u = reflexChain.push(vPrev);
         } else {
             if (!vPrev.isReflexVertex()) {
-                ReflexChainPoint prev = reflexChain.pop();
+                ReflexChainEvent prev = reflexChain.pop();
                 if (!reflexChain.isEmpty()) {
-                    ReflexChainPoint twoPrev = reflexChain.peek();
+                    ReflexChainEvent twoPrev = reflexChain.peek();
                     boolean onUpper = vPrevPosition == ChainPosition.UPPER_CHAIN;
                     while ((onUpper && prev.getAngle(twoPrev, v) < 180) || (!onUpper && prev.getAngle(twoPrev, v) > 180)) {
                         if (twoPrev.getChainPosition() != ChainPosition.LEFT_ENDPOINT
@@ -109,7 +109,7 @@ public class MonotonePolygonTriangulation
         vPrev = v;
     }
 
-    public ReflexChainPoint getEventPoint()
+    public ReflexChainEvent getEventPoint()
     {
         return vPrev;
     }
@@ -119,11 +119,11 @@ public class MonotonePolygonTriangulation
      * @param vertices
      * @return
      */
-    private static ArrayList<ReflexChainPoint> translateInput(List<PolygonVertex> vertices)
+    private static ArrayList<ReflexChainEvent> translateInput(List<PolygonVertex> vertices)
     {
         int minIndex = vertices.indexOf(Collections.min(vertices));
         int maxIndex = vertices.indexOf(Collections.max(vertices));
-        TreeMultiset<ReflexChainPoint> output = TreeMultiset.create();
+        TreeMultiset<ReflexChainEvent> output = TreeMultiset.create();
 
         boolean onUpperChain = true;
 

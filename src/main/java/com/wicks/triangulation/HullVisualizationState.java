@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by wickstopher on 12/3/16.
+ * Class to represent a convex hull visualization state.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
 public class HullVisualizationState
 {
@@ -18,6 +20,10 @@ public class HullVisualizationState
     private int nextIndex;
     private boolean hasNext;
 
+    /**
+     * Given a List of Points, construct a new visualization state.
+     * @param convexHull
+     */
     public HullVisualizationState(List<Point> convexHull)
     {
         if (convexHull.size() < 2) {
@@ -30,6 +36,9 @@ public class HullVisualizationState
         hasNext = true;
     }
 
+    /**
+     * @return The next line to visualize
+     */
     public Line getNextLine()
     {
         Line nextLine;
@@ -46,16 +55,25 @@ public class HullVisualizationState
         return nextLine;
     }
 
+    /**
+     * @return Whether or not there is a line that has not yet been provided.
+     */
     public boolean hasNext()
     {
         return hasNext;
     }
 
+    /**
+     * @return The Convex Hull associated with this HullVisualizationState
+     */
     public List<Point> getHull()
     {
         return new ArrayList<>(convexHull);
     }
 
+    /**
+     * @return The edges that have been visualized thus far.
+     */
     public List<Line> getEdges()
     {
         return new ArrayList<>(edges);

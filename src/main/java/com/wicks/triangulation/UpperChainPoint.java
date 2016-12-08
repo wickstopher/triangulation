@@ -5,7 +5,7 @@ import com.wicks.pointtools.Point;
 /**
  * Created by wickstopher on 10/23/16.
  */
-public class UpperChainPoint extends ReflexChainPoint
+public class UpperChainPoint extends ReflexChainEvent
 {
     public UpperChainPoint(Point point, Point previous, Point next)
     {

@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by wickstopher on 12/2/16.
+ * Main class and GUI application (based on Processing) to input and display Polygon subdivisions.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
 public class PolygonTriangulation extends PApplet
 {
@@ -25,11 +27,11 @@ public class PolygonTriangulation extends PApplet
     private float panelTop = iconCenterY - iconHalfHeight - 20;
 
     // panel variables
-    float playButtonX = 115;
-    float nextButtonX = playButtonX + iconWidth + iconSpacing;
-    float modeButtonX = nextButtonX + iconWidth + iconSpacing;
-    float speedButtonX = modeButtonX + iconWidth + iconSpacing;
-    float cancelButtonX = speedButtonX + iconWidth + iconSpacing;
+    private float playButtonX = 115;
+    private float nextButtonX = playButtonX + iconWidth + iconSpacing;
+    private float modeButtonX = nextButtonX + iconWidth + iconSpacing;
+    private float speedButtonX = modeButtonX + iconWidth + iconSpacing;
+    private float cancelButtonX = speedButtonX + iconWidth + iconSpacing;
 
     // state variables
     private boolean playing;
@@ -51,6 +53,7 @@ public class PolygonTriangulation extends PApplet
     private Point firstPoint;
     private Point previousPoint;
 
+    @Override
     public void settings()
     {
         size(xDimension, yDimension);
@@ -58,33 +61,12 @@ public class PolygonTriangulation extends PApplet
         // initialize state
         drawMode = DrawMode.POINT;
         drawSpeed = DrawSpeed.NORMAL;
+
+        // reset transient variables
         reset();
     }
 
-    private void requestReset()
-    {
-        doReset = true;
-    }
-
-    private void reset()
-    {
-        playing = false;
-        firstEvent = false;
-        waitingForInput = false;
-        doReset = false;
-        points = new ArrayList<>();
-        polygons = new ArrayList<>();
-        diagonals = new ArrayList<>();
-        hullState = null;
-        polygonDrawState = null;
-        subdivision = null;
-        nextPolygonIndex = -1;
-        sweepLine = null;
-        eventPoint = null;
-        firstPoint = null;
-        previousPoint = null;
-    }
-
+    @Override
     public void draw()
     {
         try {
@@ -189,23 +171,7 @@ public class PolygonTriangulation extends PApplet
         }
     }
 
-    private void play()
-    {
-        playing = true;
-        polygons = new ArrayList<>();
-        diagonals = new ArrayList<>();
-        sweepLine = null;
-        eventPoint = null;
-        switch (drawMode) {
-            case POINT:
-                polygonDrawState = new PolygonDrawState(points);
-                break;
-            case HULL:
-                hullState = new HullVisualizationState(Point.grahamsScan(points));
-                break;
-        }
-    }
-
+    @Override
     public void mousePressed()
     {
         try {
@@ -250,6 +216,7 @@ public class PolygonTriangulation extends PApplet
         }
     }
 
+    @Override
     public void keyPressed()
     {
         switch(key) {
@@ -260,6 +227,42 @@ public class PolygonTriangulation extends PApplet
             default:
                 break;
         }
+    }
+
+    private void play()
+    {
+        playing = true;
+        polygons = new ArrayList<>();
+        diagonals = new ArrayList<>();
+        sweepLine = null;
+        eventPoint = null;
+        switch (drawMode) {
+            case POINT:
+                polygonDrawState = new PolygonDrawState(points);
+                break;
+            case HULL:
+                hullState = new HullVisualizationState(Point.grahamsScan(points));
+                break;
+        }
+    }
+
+    private void reset()
+    {
+        playing = false;
+        firstEvent = false;
+        waitingForInput = false;
+        doReset = false;
+        points = new ArrayList<>();
+        polygons = new ArrayList<>();
+        diagonals = new ArrayList<>();
+        hullState = null;
+        polygonDrawState = null;
+        subdivision = null;
+        nextPolygonIndex = -1;
+        sweepLine = null;
+        eventPoint = null;
+        firstPoint = null;
+        previousPoint = null;
     }
 
     private void drawPanel()
@@ -454,6 +457,11 @@ public class PolygonTriangulation extends PApplet
             text = "( " + mouseX + ", " + mouseY + " )";
         }
         text(text, mouseX, mouseY - 5);
+    }
+
+    private void requestReset()
+    {
+        doReset = true;
     }
 
     public static void main(String[] args)

@@ -5,7 +5,7 @@ import com.wicks.pointtools.Point;
 /**
  * Created by wickstopher on 10/23/16.
  */
-public class RightEndpoint extends ReflexChainPoint
+public class RightEndpoint extends ReflexChainEvent
 {
     public RightEndpoint(Point point, Point previous, Point next)
     {

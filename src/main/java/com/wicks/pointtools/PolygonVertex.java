@@ -1,7 +1,9 @@
 package com.wicks.pointtools;
 
 /**
- * Created by wickstopher on 11/20/16.
+ * A class to represent a 2D Polygon vertex.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
 public class PolygonVertex extends Point
 {
@@ -15,6 +17,13 @@ public class PolygonVertex extends Point
     private PolygonEdge nextEdge;
     private VertexType vertexType;
 
+    /**
+     * Construct a PolygonVertex
+     * @param x
+     * @param y
+     * @param previous
+     * @param next
+     */
     public PolygonVertex(double x, double y, PolygonVertex previous, PolygonVertex next)
     {
         super(x, y);
@@ -22,6 +31,10 @@ public class PolygonVertex extends Point
         this.next = next;
     }
 
+    /**
+     * Construct a PolygonVertex
+     * @param p
+     */
     public PolygonVertex(Point p)
     {
         super(p.x, p.y);
@@ -29,14 +42,61 @@ public class PolygonVertex extends Point
         this.next = null;
     }
 
+    /**
+     * @return If this Vertex is part of a Polygon, return the next vertex in the orientation, or null if it is not.
+     */
     public PolygonVertex getNext()
     {
         return next;
     }
 
+    /**
+     * @return If this Vertex is part of a Polygon, return the previous vertex in the orientation, or null if it is not.
+     */
     public PolygonVertex getPrevious()
     {
         return previous;
+    }
+
+    /**
+     * @return If this Vertex is part of a Polygon, return the next Edge in the orientation, or null if it is not.
+     */
+    public PolygonEdge getNextEdge()
+    {
+        return nextEdge;
+    }
+
+    /**
+     * @return If this Vertex is part of a Polygon, return the previous Edge in the orientation, or null if it is not.
+     */
+    public PolygonEdge getPreviousEdge()
+    {
+        return previousEdge;
+    }
+
+    /**
+     * @return the upper of this vertice's two incident edges
+     */
+    public PolygonEdge getUpperEdge()
+    {
+        double x = getYComparisonPoint(nextEdge, previousEdge);
+        return nextEdge.yPosition(x) >= previousEdge.yPosition(x) ? nextEdge : previousEdge;
+    }
+
+    /**
+     * @return the lower of this vertice's two incident edges
+     */
+    public PolygonEdge getLowerEdge()
+    {
+        return nextEdge == getUpperEdge() ? previousEdge : nextEdge;
+    }
+
+    /**
+     * @return The VertexType of thie Vertex
+     */
+    public VertexType getVertexType()
+    {
+        return vertexType;
     }
 
     protected void setNext(PolygonVertex next)
@@ -60,27 +120,6 @@ public class PolygonVertex extends Point
         vertexType = type;
     }
 
-    public PolygonEdge getNextEdge()
-    {
-        return nextEdge;
-    }
-
-    public PolygonEdge getPreviousEdge()
-    {
-        return previousEdge;
-    }
-
-    public PolygonEdge getUpperEdge()
-    {
-        double x = getYComparisonPoint(nextEdge, previousEdge);
-        return nextEdge.yPosition(x) >= previousEdge.yPosition(x) ? nextEdge : previousEdge;
-    }
-
-    public PolygonEdge getLowerEdge()
-    {
-        return nextEdge == getUpperEdge() ? previousEdge : nextEdge;
-    }
-
     private double getYComparisonPoint(PolygonEdge a, PolygonEdge b) {
         Point aEndpoint, bEndpoint;
 
@@ -99,10 +138,5 @@ public class PolygonVertex extends Point
             return aEndpoint.x;
         }
         return bEndpoint.x;
-    }
-
-    public VertexType getVertexType()
-    {
-        return vertexType;
     }
 }

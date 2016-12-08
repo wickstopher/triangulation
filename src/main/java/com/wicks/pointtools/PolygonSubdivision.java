@@ -4,18 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by wickstopher on 11/27/16.
+ * A class to represent a Polygon subdivision.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
 public class PolygonSubdivision
 {
-    List<Polygon> polygons;
+    private List<Polygon> polygons;
 
+    /**
+     * Initialize the PolygonSubdivision with a polygon
+     * @param polygon
+     */
     public PolygonSubdivision(Polygon polygon)
     {
         polygons = new ArrayList<Polygon>();
         polygons.add(polygon);
     }
 
+    /**
+     * Add a new diagonal, splitting the Polygon to which it belongs along that diagonal.
+     * @param diagonal
+     */
     public void addDiagonal(Line diagonal)
     {
         Polygon polygon = null;
@@ -38,6 +48,10 @@ public class PolygonSubdivision
         polygons.addAll(polygon.split(a, b));
     }
 
+    /**
+     * Get all of the Polygons in this subdivision.
+     * @return a List of the Polygons in this subdivision
+     */
     public List<Polygon> getPolygons()
     {
         return new ArrayList<>(polygons);

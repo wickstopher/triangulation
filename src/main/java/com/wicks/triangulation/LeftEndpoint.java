@@ -3,11 +3,12 @@ package com.wicks.triangulation;
 import com.wicks.pointtools.Point;
 
 /**
- * Created by wickstopher on 10/23/16.
+ * Class to represent a Left Endpoint event for the MonotonePolygonTriangulation.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
-public class LeftEndpoint extends ReflexChainPoint
+public class LeftEndpoint extends ReflexChainEvent
 {
-
     public LeftEndpoint(Point point, Point previous, Point next)
     {
         super(point, previous, next);

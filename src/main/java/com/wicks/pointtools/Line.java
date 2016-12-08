@@ -4,7 +4,9 @@ import java.util.Optional;
 import Jama.*;
 
 /**
- * Created by wickstopher on 10/8/16.
+ * Class to represent a 2D line.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
 public class Line
 {
@@ -14,6 +16,11 @@ public class Line
     public final Double intercept;
     public Double statusKey;
 
+    /**
+     * Construct a Line
+     * @param a
+     * @param b
+     */
     public Line(Point a, Point b)
     {
         // We guarantee that the "leftmost" com.wicks.pointtools.Point is always going to be com.wicks.pointtools.Point a
@@ -34,11 +41,23 @@ public class Line
         statusKey = this.a.y;
     }
 
+    /**
+     * Construct a Line
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     */
     public Line(double x1, double y1, double x2, double y2)
     {
         this(new Point(x1, y1), new Point(x2, y2));
     }
 
+    /**
+     * Does this Line equal the other Object?
+     * @param other
+     * @return whether or not the Line is equal to the other Object
+     */
     public boolean equals(Object other)
     {
         if (other == this) return true;
@@ -50,6 +69,10 @@ public class Line
         return false;
     }
 
+    /**
+     * Is tjhis a vertical line?
+     * @return
+     */
     public boolean isVertical()
     {
         return (slope == null);
@@ -77,6 +100,11 @@ public class Line
         }
     }
 
+    /**
+     * Get this Line's point of intersection with the other Line
+     * @param other
+     * @return The intersection point between the Lines
+     */
     public Optional<Point> intersectionWith(Line other)
     {
         if (isCollinear(other)) {
@@ -104,19 +132,6 @@ public class Line
         }
     }
 
-    private Matrix solve(double[][] coefficients, double[][] constants)
-    {
-        Matrix coefficientMatrix = new Matrix(coefficients);
-        Matrix constantMatrix = new Matrix(constants);
-        Matrix solution = coefficientMatrix.solve(constantMatrix);
-        return solution;
-    }
-
-    public boolean isAbove(Line other, double x)
-    {
-        return yPosition(x) > other.yPosition(x);
-    }
-
     /**
      * @param x
      * @return The y-position on this line at the given x-coordinate
@@ -126,8 +141,30 @@ public class Line
         return slope * x + intercept;
     }
 
+    /**
+     * @param other
+     * @param x
+     * @return whether or not this Line is above the other Line at the given x-coordinate.
+     */
+    public boolean isAbove(Line other, double x)
+    {
+        return yPosition(x) > other.yPosition(x);
+    }
+
+    /**
+     * @return A String representation of the Line
+     */
     public String toString()
     {
         return "[ " + a + " -- " + b + "]";
+    }
+
+
+    private Matrix solve(double[][] coefficients, double[][] constants)
+    {
+        Matrix coefficientMatrix = new Matrix(coefficients);
+        Matrix constantMatrix = new Matrix(constants);
+        Matrix solution = coefficientMatrix.solve(constantMatrix);
+        return solution;
     }
 }

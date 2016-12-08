@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.TreeMap;
 
 /**
- * Created by wickstopher on 11/20/16.
+ * Class to hold the state of one run of the Monotone Polygon Subdivision algorithm.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
 public class MonotonePolygonSubdivision
 {
@@ -20,6 +22,10 @@ public class MonotonePolygonSubdivision
     private int nextIndex;
     private double xPosition;
 
+    /**
+     * Initialize the algorithm with the given Polygon.
+     * @param polygon
+     */
     public MonotonePolygonSubdivision(Polygon polygon)
     {
         this.polygon = polygon;
@@ -30,11 +36,17 @@ public class MonotonePolygonSubdivision
         sweepLineStatus = new TreeMap<>();
     }
 
+    /**
+     * @return Is there another event to process?
+     */
     public boolean hasNextEvent()
     {
         return nextIndex < events.size();
     }
 
+    /**
+     * Process the next event and adjust the state of the subdivision.
+     */
     public void processNextEvent()
     {
         SweepLineEvent event = events.get(nextIndex++);
@@ -76,11 +88,17 @@ public class MonotonePolygonSubdivision
         }
     }
 
+    /**
+     * @return The current vertex (associated with the most recently processed event)
+     */
     public PolygonVertex getCurrentVertex()
     {
         return currentVertex;
     }
 
+    /**
+     * @return The PolygonSubdivision of the Polygon with which the algorithm was initialized.
+     */
     public PolygonSubdivision getPolygonSubdivison()
     {
         if (polygonSubdivision == null) {
@@ -93,6 +111,9 @@ public class MonotonePolygonSubdivision
         return polygonSubdivision;
     }
 
+    /**
+     * @return The sweepline at the most recently processed event.
+     */
     public Line getSweepline()
     {
         if (!sweepLineStatus.isEmpty()) {
@@ -109,6 +130,14 @@ public class MonotonePolygonSubdivision
         List<PolygonVertex> vertices = polygon.getSortedVertices();
         Point p = vertices.get(vertices.size() - 1);
         return new Line(p, p);
+    }
+
+    /**
+     * @return All new diagonals that have been added to the Polygon thus far.
+     */
+    public List<Line> getNewDiagonals()
+    {
+        return new ArrayList<>(newDiagonals);
     }
 
     private void insertVertexEdges(PolygonVertex v)
@@ -179,10 +208,5 @@ public class MonotonePolygonSubdivision
                 insertStatusEdge(v.getUpperEdge(), v.y + 0.000001);
             }
         }
-    }
-
-    public List<Line> getNewDiagonals()
-    {
-        return new ArrayList<>(newDiagonals);
     }
 }

@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by wickstopher on 12/3/16.
+ * Class to represent the state of drawing a Polygon on the screen.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
 public class PolygonDrawState
 {
@@ -18,6 +20,10 @@ public class PolygonDrawState
     List<Line> processedEdges;
     private int nextIndex;
 
+    /**
+     * Initialize the draw state with a list of Points.
+     * @param vertices
+     */
     public PolygonDrawState(List<Point> vertices)
     {
         this.vertices = vertices;
@@ -27,27 +33,42 @@ public class PolygonDrawState
         nextIndex = 0;
     }
 
+    /**
+     * @return the edges of the Polygon that was created at initialization
+     */
     public List<Line> getEdges()
     {
         return new ArrayList<>(edges);
     }
 
+    /**
+     * @return The vertices that this state was initialized with
+     */
     public List<Point> getVertices()
     {
         return new ArrayList<>(vertices);
     }
 
+    /**
+     * @return is there another Line to draw?
+     */
     public boolean hasNext()
     {
         return nextIndex < edges.size();
     }
 
+    /**
+     * @return get the next Line to draw
+     */
     public Line getNextLine()
     {
         processedEdges.add(edges.get(nextIndex));
         return edges.get(nextIndex++);
     }
 
+    /**
+     * @return The edges that have been processed thus far
+     */
     public List<Line> getProcessedEdges()
     {
         return new ArrayList<>(processedEdges);

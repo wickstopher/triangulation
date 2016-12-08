@@ -5,13 +5,19 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by wickstopher on 11/20/16.
+ * Class to represent a 2D Polygon.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
 public class Polygon
 {
     private List<PolygonVertex> vertices;
     private List<PolygonEdge> edges;
 
+    /**
+     * Construct a Polygon given a counter-clockwise list of Points
+     * @param points
+     */
     public Polygon(List<Point> points)
     {
         initializeVertices(points);
@@ -19,11 +25,17 @@ public class Polygon
         determineVertexTypes();
     }
 
+    /**
+     * @return the edges of this Polygon
+     */
     public List<Line> getEdges()
     {
         return new ArrayList<>(edges);
     }
 
+    /**
+     * @return a sorted list of this Polygon's vertices
+     */
     public List<PolygonVertex> getSortedVertices()
     {
         List<PolygonVertex> sortedVertices = new ArrayList<>(vertices);
@@ -31,11 +43,20 @@ public class Polygon
         return sortedVertices;
     }
 
+    /**
+     * @return The vertices of this Polygon in the order it was constructed
+     */
     public List<PolygonVertex> getVertices()
     {
         return new ArrayList<>(vertices);
     }
 
+    /**
+     * Given two vertices, return the two Polygons that would be constructed by splitting along the edge connecting
+     * those two vertices.
+     * @param a
+     * @param b
+     */
     public List<Polygon> split(PolygonVertex a, PolygonVertex b)
     {
         List<Polygon> newPolygons = new ArrayList<>(2);

@@ -3,9 +3,11 @@ package com.wicks.triangulation;
 import com.wicks.pointtools.Point;
 
 /**
- * Created by wickstopher on 10/23/16.
+ * Class to represent a Lower Chain Point for the MonotonePolygonTriangulation.
+ *
+ * @author Christopher R. Wicks <wickstopher@gmail.com>
  */
-public class LowerChainPoint extends ReflexChainPoint
+public class LowerChainPoint extends ReflexChainEvent
 {
     public LowerChainPoint(Point point, Point previous, Point next)
     {
