@@ -19,6 +19,7 @@ run: $(TRIANGULATION)
 clean:
 	@mvn clean
 	@rm -rf $(BIN)
+	@rm dependency-reduced-pom.xml
 
 setup:
 	@mkdir -p $(BIN)
