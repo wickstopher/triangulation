@@ -51,21 +51,6 @@ public class PointTest
     }
 
     @Test
-    public void testTestTest()
-    {
-        Point a = new Point(0, 0);
-        Point b = new Point(-1, 1);
-        Point c = new Point(-1, -1);
-
-        System.out.println(a.getAngle(b, c));
-
-        b = new Point(1, 1);
-        c = new Point(1, -1);
-
-        System.out.println(a.getAngle(b, c));
-    }
-
-    @Test
     public void testDistanceExpectOne()
     {
         Point a = new Point(0, 0);
