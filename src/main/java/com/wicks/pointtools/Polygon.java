@@ -20,7 +20,10 @@ public class Polygon
      */
     public Polygon(List<Point> points)
     {
-        initializeVertices(points);
+        if (points.size() < 3) {
+            throw new RuntimeException("Polygons need at least 3 vertices!");
+        }
+        initializeVertices(fixOrientation(points));
         initializeEdges();
         determineVertexTypes();
     }
@@ -80,6 +83,20 @@ public class Polygon
         newPolygons.add(new Polygon(bPoints));
 
         return newPolygons;
+    }
+
+    private List<Point> fixOrientation(List<Point> points)
+    {
+        List<Point> newPoints = new ArrayList<>(points);
+
+        Point p = newPoints.get(0);
+        Point q = newPoints.get(1);
+        Point r = newPoints.get(2);
+
+        if (p.orientation(q, r) <= 0) {
+            Collections.reverse(newPoints);
+        }
+        return newPoints;
     }
 
     private void initializeEdges()
