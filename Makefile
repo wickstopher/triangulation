@@ -4,7 +4,7 @@
 #	maven >= 3.0
 
 TRIANGULATION = triangulation
-JAR = target/sweepline-*.jar
+JAR = target/triangulation-*.jar
 BIN = bin/
 TARGET = $(BIN)$(TRIANGULATION)
 

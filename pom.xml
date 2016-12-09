@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wickstopher</groupId>
-    <artifactId>sweepline</artifactId>
+    <artifactId>triangulation</artifactId>
     <version>0.9</version>
 
     <build>
