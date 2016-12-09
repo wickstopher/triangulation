@@ -285,7 +285,7 @@ public class PolygonTriangulation extends PApplet
         strokeWeight(8);
         if (onButton(nextButtonX)) {
             stroke(100, 25, 75);
-            fill(100, 25, 120);
+            fill(100, 25, 75);
         } else {
             stroke(100, 25, 120);
             fill(100, 25, 120);
