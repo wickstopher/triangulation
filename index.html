@@ -37,7 +37,7 @@
             <p>
                 <a href="https://en.wikipedia.org/wiki/Sweep_line_algorithm">Plane-sweep algorithms</a> are a fundamental way of conceptualizing an algorithmic solution to
                 many problems in computational geometry. They involve
-                moving a figurative hyperplane across an n-dimensional space, processing event points as we bump up against their physical location.
+                moving a figurative hyperplane across an <i>n</i>-dimensional space, processing event points as we bump up against their physical location.
                 Since we will be dealing with 2 dimensions, the hyperplane is in fact a line, and for our purposes we will refer to
                 these algorithms as "sweep-line" algorithms. These algorithms tend to be intuitive in explanation, but can contain a lot of moving parts, 
                 which leads to the fact that implementation details and deeper understanding can often be elusive.
@@ -50,11 +50,18 @@
 
             <h3><i>x</i>-monotonicity</h3>
             <p>
-                A polygon is said to be <i>x-monotone</i> if for any given vertical line on the plane, that polygon is intersected by that line at most twice.
+                A polygon is said to be <i>x-</i>monotone if for any given vertical line on the plane, that polygon is intersected by that line at most twice. <i>Fun fact:</i> since monotonicity is defined with respect to a given axis, note that the example provided below is not <i>y</i>-monotone. If we were to run the algorithm from, for example, top-to-bottom instead of left-to-right, we would require a <i>y</i>-monotone polygon.
             </p>
 
             <br><br><img src="resources/xmonotonepoly.png">
-            <br><img src="resources/nonmonotonepoly.png">
+            <br><br><img src="resources/nonmonotonepoly.png"><br><br>
+
+            <p>
+                As stated previously, this is a two phase algorithm. The second phase of the algorithm requires monotone polygons as input, so in the first phase we break down
+                an arbitrary closed polygon into monotone polygons.
+            </p>
+
+            <br><br><img src="resources/subdivision.png">
 
 
       </section>
