@@ -205,8 +205,6 @@ public class PolygonTriangulation extends PApplet
                     case HULL:
                         points.add(previousPoint);
                         break;
-                    case DRAW:
-                        break;
                 }
             }
         } catch (Exception e) {
@@ -471,7 +469,7 @@ public class PolygonTriangulation extends PApplet
 
     private enum DrawMode
     {
-        POINT, HULL, DRAW
+        POINT, HULL
     }
 
     private enum DrawSpeed
