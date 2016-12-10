@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Polygon Triangulation</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Polygon Triangulation</h1>
+        <p>
+           A Project by Christopher R. Wicks<br>
+           for <a href="https://www.cs.rit.edu/~rjb/RITcourses/2161/CompGeo/ComputationalGeometry.html">Computational Geometry</a><br>
+           <a href="https://www.rit.edu">Rochester Institute of Technology</a><br>
+           Fall 2016 Semester
+        </p>
+
+        <p class="view"><a href="https://github.com/wickstopher/triangulation">View the Project on GitHub <small>wickstopher/triangulation</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/wickstopher/triangulation/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/wickstopher/triangulation/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/wickstopher/triangulation">View On <strong>GitHub</strong></a></li>
+        </ul>
+
+        <p>
+        	To build and run the project from source, download the above .zip file or tarball and check out the README file. Prerequisites for building the project from
+        	include <a href="https://www.gnu.org/software/make/">GNU Make</a>, the <a href="http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html">Java 8 SDK</a>,
+        	and <a href="https://maven.apache.org/">Apache Maven</a>.
+
+        	<p>You can also simply download a <a href="resources/triangulation-0.9.jar">prebuilt executable JAR file</a> of the application and run it in the usual way (<a href="http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html">Java 8</a> required).
+      </header>
+      <section>
+            <h3><i>x</i>-monotonicity</h3>
+            <p>
+                A polygon is said to be <i>x-</i>monotone if for any given vertical line on the plane, that polygon is intersected by that line at most twice. <i>Fun fact:</i> since monotonicity is defined with respect to a given axis, note that the example provided below is not <i>y</i>-monotone. If we were to run the algorithm from, for example, top-to-bottom instead of left-to-right, we would require a <i>y</i>-monotone polygon.
+            </p>
+
+            <br><br><img src="resources/xmonotonepoly.png">
+            <br><br><img src="resources/nonmonotonepoly.png"><br><br>
+
+            <p>
+                As stated previously, this is a two phase algorithm. The second phase of the algorithm requires monotone polygons as input, so in the first phase we break down
+                an arbitrary closed polygon into monotone polygons.
+            </p>
+
+            <br><br><img src="resources/subdivision.png"><br><br>
+
+            <p>
+            	The process for doing this is by using a sweep-line algorithm with one event per polygon vertex. We literally sweep across the polygon
+            	and any time we "bump into" a vertex, we process the event at that vertex.
+        	</p>
+
+        	<h3>Vertex Types for Event Processing</h3>
+        	
+        	<ul>
+        		<li><b>Split</b>: Vertex is the left endpoint of both of its incident edges, and its interior angle is greater than &pi;</li>
+        		<li><b>Merge</b>: Vertex is the right endpoint of both of its incident edges, and its interior angle is greater than &pi;</li>
+        		<li><b>Start</b>: Vertex is the left endpoint of both of its incident edges, and its interior angle is less than &pi;</li>
+        		<li><b>End</b>: Vertex is the right endpoint of both of its incident edges, and its interior angle is less than &pi;</li>
+        		<li><b>Upper</b>: Given a counter-clockwise orientation, the vertex is the right endpoint of its "next" edge and the left endpoint of its "previous" edge</li>
+        		<li><b>Lower</b>: Given a counter-clockwise orientation, the vertex is the right endpoint of its "previous" edge and the left endpoint of its "next" edge</li>
+    		</ul>
+
+    		<img src="resources/event_types.png">
+    		<p align="center"><i><font size=1>image source: <a href="http://www.cs.umd.edu/class/fall2014/cmsc754/Lects/cmsc754-fall14-lects.pdf">David Mount's Lecture Notes for Computational Geometry</a></i></font></p>
+
+    		<h3>Monotone Polygon Subdivision Algorithm</h3>
+
+    		<p>First, we define <b>Fix-up</b><i>(v,e)</i> as follows: if <b>helper</b>(<i>e</i>) is a <b>merge</b> vertex, add a diagonal from <i>v</i> to <b>helper</b>(<i>e</i>).</p>
+
+    		<p>Recall too that the event vertices are in a list sorted by x-coordinate.</p>
+
+
+    		<h4>For each event vertex, <i>v</i>:</h4>
+
+    		<ul>
+    			<li>If <i>v</i> is a <b>split</b> vertex: let <i>e</i> be the edge on the sweep-line immediately above <i>v</i> and add a diagonal connecting <i>v</i> to helper(e). Let <i>e</i>’ be the <i>v</i>’s lower incident edge. Make <i>v</i> the helper of both <i>e</i> and <i>e</i>’. Add <i>v</i>’s incident edges to the sweep-line status.</li>
+    			
+    			<li>If <i>v</i> is a <b>merge</b> vertex: delete its incident edges from the sweep-line status. Let <i>e</i> be the edge now lying immediately above <i>v</i> on the sweep-line. Let <i>e</i>’ be v’s lower incident edge. <b>Fix-up</b><i>(v,e)</i> and <b>Fix-up</b>(v,e’). <font color="red">Make <i>v</i> the helper of <i>e</i>. *</font></li>
+
+    			<li>If <i>v</i> is an <b>end</b> vertex: delete its adjacent edges from the sweep-line status. Let <i>e</i> be <i>v</i>’s upper incident edge. <b>Fix-up</b><i>(v,e)</i>.</li>
+
+    			<li>If <i>v</i> is an <b>upper</b> vertex: let <i>e</i> be <i>v</i>’s left incident edge. <b>Fix-up</b><i>(v,e)</i>. Delete <i>e</i> from the sweep-line status and add <i>v</i>’s right incident edge. Make <i>v</i> the helper of its right incident edge.</li>
+
+    			<li>If <i>v</i> is a <b>lower</b> vertex: let <i>e</i> be the edge above <i>v</i> on the sweep-line status. <b>Fix-up</b><i>(v,e)</i>. Delete <i>v</i>’s left incident edge from the sweep-line status and add <i>v</i>’s right incident edge. Make v the helper of its right incident edge.
+			</ul>
+
+			<p><font size=1>* This detail was missing from the algorithm source, but is crucial for the algorithm to function correctly<br>
+                <i>Algorithm source: <a href="http://www.cs.umd.edu/class/fall2014/cmsc754/Lects/cmsc754-fall14-lects.pdf">David Mount's Lecture Notes for Computational Geometry</a>.</i></font></p>
+
+			
+			<h3>Event Types for Polygon Triangulation</h3>
+
+			<p>Now that we have subdivided our polygon into monotone polygons, we can use the next phase of the algorithm to triangulate each polygon individually!
+			   Much like with our previous sweep-line algorithm, there is only one event per polygon vertex, and they are sorted from left-to-right by x-coordinate.
+			   The event type for this algorithm is a little simpler, but like the previous algorithm corresponds to the vertex's location on the polygon:
+		    </p>
+
+		    <ul>
+		    	<li>The <b>leftmost</b> vertex (there can only be one!)</li>
+		    	<li>The <b>rightmost</b> vertex (again, only one!)</li>
+		    	<li>An <b>upper-chain</b> vertex</li>
+		    	<li>A <b>lower-chain</b> vertex</li>
+	    	</ul>
+
+	    	<h3>Monotone Polygon Triangulation</h3>
+
+	    	<p>A given vertex on a monotone polygonal curve is said to be a "reflex" vertex if its interior angle is greater than &pi;.</p>
+
+	    	<br><br><img src="resources/reflex_chain.png"><br><br>
+
+	    	<p>For each vertex following the leftmost vertex, let <i>v<sub>i</sub></i> be that vertex and let <i>v<sub>i-1</sub></i> be the vertex associated with the previous event. We maintain a stack
+	    	   uf untriangulated vertices.
+	        </p>
+
+	        <ul>
+	        	<li>If <i>v<sub>i</sub></i> and <i>v<sub>i-1</sub></i> lie on opposite chains, we add diagonals between <i>v<sub>i</sub></i> and the untriangulated vertices on the opposing stack.</li>
+	        	<li>If <i>v<sub>i</sub></i> and <i>v<sub>i-1</sub></i> lie on the same chain, there are two cases:
+	        		<ul>
+	        			<li>If <i>v<sub>i-1</sub></i> is a reflex vertex, that means that none of the prior vertices on the reflex chain are visible to <i>v<sub>i</sub></i>, so 
+	        			    we simply add <i>v<sub>i</sub></i> to the chain.</li>
+        			    <br><br><img src="resources/case_b.png"><br><br>
+        			    <li>If <i>v<sub>i-1</sub></i> is a non-reflex vertex, we pop vertices off the reflex chain that are visible to <i>v<sub>i-1</sub></i>, adding diagonals between <i>v<sub>i-1</sub></i> and each of those vertices, leaving the last remaining visible vertex on the chain.</li>
+        			    <br><br><img src="resources/case_a.png"><br><br>
+    					<p><i><font size=1>image source: <a href="http://www.cs.umd.edu/class/fall2014/cmsc754/Lects/cmsc754-fall14-lects.pdf">David Mount's Lecture Notes for Computational Geometry</a></i></font></p>
+			        </ul>
+		        </li>
+	        </ul>
+      </section>
+      <section>
+        <p align="center"><a href="index.html">Previous</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="project.html">Next</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/wickstopher">wickstopher</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

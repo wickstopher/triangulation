@@ -40,39 +40,31 @@
         	<p>You can also simply download a <a href="resources/triangulation-0.9.jar">prebuilt executable JAR file</a> of the application and run it in the usual way (<a href="http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html">Java 8</a> required).
       </header>
       <section>
-            <h3>Project Introduction</h3>
-            <p>
-                <a href="https://en.wikipedia.org/wiki/Sweep_line_algorithm">Plane-sweep algorithms</a> are a fundamental way of conceptualizing an algorithmic solution to
-                many problems in computational geometry. They involve
-                moving a figurative hyperplane across an <i>n</i>-dimensional space, processing event points as we bump up against their physical location.
-                Since we will be dealing with 2 dimensions, the hyperplane is in fact a line, and for our purposes we will refer to
-                these algorithms as "sweep-line" algorithms. These algorithms tend to be intuitive in explanation, but can contain a lot of moving parts, 
-                which leads to the fact that implementation details and deeper understanding can often be elusive.
-            </p>
-            <p>
-                In this project, an attempt is made at visualizing a two-phase sweepline algorithm for triangulating arbitrary
-                closed polygons. The first phase of the algorithm decomposes the input polygon into simpler, x-monotone polygons,
-                and the second phase further simplifies the sub-polygons by decomposing them into triangles.
-            </p>
 
-            <h3>Technologies Used in this Project</h3>
+        	<h3>Future Work: Failure Cases</h3>
 
-	        <ul>
-	        	<li><a href="http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html">Java 8</a></li>
-	        	<li><a href="https://maven.apache.org/">Apache Maven</a></li>
-	        	<li><a href="https://github.com/google/guava/wiki">Google Guava</a> (Java Library)</li>
-	        	<li><a href="http://math.nist.gov/javanumerics/jama/">JAMA</a> (Java Matrix Package)</li>
-	        	<li><a href="https://processing.org/">Processing</a></li>
-        	</ul>
+        	<p>The bulk of this project is in what I would consider to be a completed state. There are, however, a few things that are left to do.
+        	   The polygon subdivision algorithm appears to be correct in all of the cases that I've tested, but there are a few cases for which the triangulation algorithm
+        	   is incorrect. Despite multiple rewrites and intensive debugging sessions, I haven't quite picked up on the subtleties that I seem
+        	   to be missing for these cases
+    	    <p>
 
-        	<h3>
+    	    <img src="resources/failure1.png"> 
+    	    <p><font size=2>Failed to add diagonal at second-to-last event point</font></p><br><br>
 
+    	    <img src="resources/failure2.png">
+    	    <p><font size=2>Failed to add diagonal at third event point; erroneous diagonal at fourth event point</font></p>
 
+    	    <h3>Future Work: Additional Visualizations</h3>
+
+    	    <p>Additional work could be done to add extra visual information. I wanted to keep this project as simple as possible so that the core algorithms could be visually understood, 
+    	    but the way that the algorithm-processing data structures are set up is such that we can peek "under the hood", so to speak, at each stage of the algorithm if we so desire. 
+    	    Perhaps a more visually-inclined person than myself could pick this work up and figure out some additional interesting visualizations to add.</p>
       </section>
 
       <section>
-      	<p align="center"><a href="algorithm.html">Next</a></p>
-	  </section>
+        <p align="center"> <a href="algorithm.html">Previous</a>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="index.html">Home</a></p>
+      </section>
 
       <footer>
         <p>This project is maintained by <a href="https://github.com/wickstopher">wickstopher</a></p>
