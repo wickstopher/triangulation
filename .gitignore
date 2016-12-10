@@ -1,3 +1,7 @@
 .idea/
 sweepline.iml
 
+bin/
+target/
+triangulation.iml
+dependency-reduced-pom.xml

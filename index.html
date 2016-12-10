@@ -61,7 +61,74 @@
                 an arbitrary closed polygon into monotone polygons.
             </p>
 
-            <br><br><img src="resources/subdivision.png">
+            <br><br><img src="resources/subdivision.png"><br><br>
+
+            <p>
+            	The process for doing this is by using a sweep-line algorithm with one event per polygon vertex. We literally sweep across the polygon
+            	and any time we "bump into" a vertex, we process the event at that vertex.
+        	</p>
+
+        	<h3>Vertex Types for Event Processing</h3>
+        	
+        	<ul>
+        		<li><b>Split</b>: Vertex is the left endpoint of both of its incident edges, and its interior angle is greater than &pi;</li>
+        		<li><b>Merge</b>: Vertex is the right endpoint of both of its incident edges, and its interior angle is greater than &pi;</li>
+        		<li><b>Start</b>: Vertex is the left endpoint of both of its incident edges, and its interior angle is less than &pi;</li>
+        		<li><b>End</b>: Vertex is the right endpoint of both of its incident edges, and its interior angle is less than &pi;</li>
+        		<li><b>Upper</b>: Given a counter-clockwise orientation, the vertex is the right endpoint of its "next" edge and the left endpoint of its "previous" edge</li>
+        		<li><b>Lower</b>: Given a counter-clockwise orientation, the vertex is the right endpoint of its "previous" edge and the left endpoint of its "next" edge</li>
+    		</ul>
+
+    		<img src="resources/event_types.png">
+    		<p align="center"><i><font size=1>image source: <a href="http://www.cs.umd.edu/class/fall2014/cmsc754/Lects/cmsc754-fall14-lects.pdf">David Mount's Lecture Notes for Computational Geometry</a></i></font></p>
+
+    		<h3>Monotone Polygon Subdivision Algorithm</h3>
+
+    		<p>First, we define <b>Fix-up</b><i>(v,e)</i> as follows: if <b>helper</b>(<i>e</i>) is a <b>merge</b> vertex, add a diagonal from <i>v</i> to <b>helper</b>(<i>e</i>).</p>
+
+    		<p>Recall too that the event vertices are in a list sorted by x-coordinate.</p>
+
+
+    		<h4>For each event vertex, <i>v</i>:</h4>
+
+    		<ul>
+    			<li>If <i>v</i> is a <b>split</b> vertex: let <i>e</i> be the edge on the sweep-line immediately above <i>v</i> and add a diagonal connecting <i>v</i> to helper(e). Let <i>e</i>’ be the <i>v</i>’s lower incident edge. Make <i>v</i> the helper of both <i>e</i> and <i>e</i>’. Add <i>v</i>’s incident edges to the sweep-line status.</li>
+    			
+    			<li>If <i>v</i> is a <b>merge</b> vertex: delete its incident edges from the sweep-line status. Let <i>e</i> be the edge now lying immediately above <i>v</i> on the sweep-line. Let <i>e</i>’ be v’s lower incident edge. <b>Fix-up</b><i>(v,e)</i> and <b>Fix-up</b>(v,e’). <font color="red">Make <i>v</i> the helper of <i>e</i>. *</font></li>
+
+    			<li>If <i>v</i> is an <b>end</b> vertex: delete its adjacent edges from the sweep-line status. Let <i>e</i> be <i>v</i>’s upper incident edge. <b>Fix-up</b><i>(v,e)</i>.</li>
+
+    			<li>If <i>v</i> is an <b>upper</b> vertex: let <i>e</i> be <i>v</i>’s left incident edge. <b>Fix-up</b><i>(v,e)</i>. Delete <i>e</i> from the sweep-line status and add <i>v</i>’s right incident edge. Make <i>v</i> the helper of its right incident edge.</li>
+
+    			<li>If <i>v</i> is a <b>lower</b> vertex: let <i>e</i> be the edge above <i>v</i> on the sweep-line status. <b>Fix-up</b><i>(v,e)</i>. Delete <i>v</i>’s left incident edge from the sweep-line status and add <i>v</i>’s right incident edge. Make v the helper of its right incident edge.
+			</ul>
+
+			<p><font size=1>* This detail was missing from the algorithm source, but is crucial for the algorithm to function correctly<br>
+                <i>Algorithm source: <a href="http://www.cs.umd.edu/class/fall2014/cmsc754/Lects/cmsc754-fall14-lects.pdf">David Mount's Lecture Notes for Computational Geometry</a>.</i></font></p>
+
+			
+			<h3>Event Types for Polygon Triangulation</h3>
+
+			<p>Now that we have subdivided our polygon into monotone polygons, we can use the next phase of the algorithm to triangulate each polygon individually!
+			   Much like with our previous sweep-line algorithm, there is only one event per polygon vertex, and they are sorted from left-to-right by x-coordinate.
+			   The event type for this algorithm is a little simpler, but like the previous algorithm corresponds to the vertex's location on the polygon:
+		    </p>
+
+		    <ul>
+		    	<li>The <b>leftmost</b> vertex (there can only be one!)</li>
+		    	<li>The <b>rightmost</b> vertex (again, only one!)</li>
+		    	<li>An <b>upper-chain</b> vertex</li>
+		    	<li>A <b>lower-chain</b> vertex</li>
+	    	</ul>
+
+	    	<h3>Reflex Chain</h3>
+
+	    	<p>A given vertex on a monotone polygonal curve is said to be a "reflex" vertex if its interior angle is greater than &pi;.</p>
+
+	    	<br><br><img src="resources/reflex_chain.png"><br><br>
+
+
+
 
 
       </section>
