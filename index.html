@@ -121,15 +121,48 @@
 		    	<li>A <b>lower-chain</b> vertex</li>
 	    	</ul>
 
-	    	<h3>Reflex Chain</h3>
+	    	<h3>Monotone Polygon Triangulation</h3>
 
 	    	<p>A given vertex on a monotone polygonal curve is said to be a "reflex" vertex if its interior angle is greater than &pi;.</p>
 
 	    	<br><br><img src="resources/reflex_chain.png"><br><br>
 
+	    	<p>For each vertex following the leftmost vertex, let <i>v<sub>i</sub></i> be that vertex and let <i>v<sub>i-1</sub></i> be the vertex associated with the previous event. We maintain a stack
+	    	   uf untriangulated vertices.
+	        </p>
 
+	        <ul>
+	        	<li>If <i>v<sub>i</sub></i> and <i>v<sub>i-1</sub></i> lie on opposite chains, we add diagonals between <i>v<sub>i</sub></i> and the untriangulated vertices on the opposing stack.</li>
+	        	<li>If <i>v<sub>i</sub></i> and <i>v<sub>i-1</sub></i> lie on the same chain, there are two cases:
+	        		<ul>
+	        			<li>If <i>v<sub>i-1</sub></i> is a reflex vertex, that means that none of the prior vertices on the reflex chain are visible to <i>v<sub>i</sub></i>, so 
+	        			    we simply add <i>v<sub>i</sub></i> to the chain.</li>
+        			    <br><br><img src="resources/case_b.png"><br><br>
+        			    <li>If <i>v<sub>i-1</sub></i> is a non-reflex vertex, we pop vertices off the reflex chain that are visible to <i>v<sub>i-1</sub></i>, adding diagonals between <i>v<sub>i-1</sub></i> and each of those vertices, leaving the last remaining visible vertex on the chain.</li>
+        			    <br><br><img src="resources/case_a.png"><br><br>
+    					<p><i><font size=1>image source: <a href="http://www.cs.umd.edu/class/fall2014/cmsc754/Lects/cmsc754-fall14-lects.pdf">David Mount's Lecture Notes for Computational Geometry</a></i></font></p>
+			        </ul>
+		        </li>
+	        </ul>
 
+	        <h3>Technologies Used in this Project</h3>
 
+	        <ul>
+	        	<li><a href="http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html">Java 8</a></li>
+	        	<li><a href="https://maven.apache.org/">Apache Maven</a></li>
+	        	<li><a href="https://github.com/google/guava/wiki">Google Guava</a> (Java Library)</li>
+	        	<li><a href="http://math.nist.gov/javanumerics/jama/">JAMA</a> (Java Matrix Package)</li>
+	        	<li><a href="https://processing.org/">Processing</a></li>
+        	</ul>
+
+        	<h3>
+
+        	<h3>Future Work</h3>
+
+        	<p>The bulk of this project is in what I would consider to be a completed state. There are, however, a few things that are left to do.
+        	   The polygon subdivision algorithm seems to be correct in all cases, but there are a few cases of the triangulation algorithm that
+        	   are incorrect. Despite multiple rewrites and intensive debugging sessions, I haven't quite picked up on the subtleties that I seem
+        	   to be missing for these cases.
 
       </section>
       <footer>
