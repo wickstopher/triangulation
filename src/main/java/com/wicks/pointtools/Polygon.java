@@ -89,11 +89,15 @@ public class Polygon
     {
         List<Point> newPoints = new ArrayList<>(points);
 
-        Point p = newPoints.get(0);
-        Point q = newPoints.get(1);
-        Point r = newPoints.get(2);
+        int sum = 0;
+        for (int i = 0; i < newPoints.size(); i++) {
+            Point p = newPoints.get(i);
+            Point next = i < newPoints.size() - 1 ? newPoints.get(i+1) : newPoints.get(0);
 
-        if (p.orientation(q, r) <= 0) {
+            sum += ( (next.x - p.x) * (next.y + p.y) );
+        }
+        if (sum > 0) {
+            // it's clockwise, need to fix it
             Collections.reverse(newPoints);
         }
         return newPoints;
